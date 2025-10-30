@@ -1,3 +1,5 @@
+import 'package:cema_mobile/app/modules/dashboard/bindings/dashboard_binding.dart';
+import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
 import 'package:cema_mobile/app/modules/forget_password/bindings/forget_password_binding.dart';
 import 'package:cema_mobile/app/modules/forget_password/views/forget_password_view.dart';
 import 'package:cema_mobile/app/modules/home/views/home_navbar.dart';
@@ -32,6 +34,11 @@ class AppPages {
       name: _Paths.REGISTER,
       page: () => const RegisterView(),
       binding: RegisterBinding(),
+    ),
+    GetPage(
+      name: _Paths.DASHBOARD,
+      page: () => const DashboardView(),
+      binding: DashboardBinding(),
     ),
   ];
 }

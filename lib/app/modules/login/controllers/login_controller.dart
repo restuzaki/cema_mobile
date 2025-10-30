@@ -28,6 +28,8 @@ class LoginController extends GetxController {
       "Logged in as $name",
       snackPosition: SnackPosition.TOP,
     );
+
+    Get.toNamed("/home");
   }
 
   void signUp() {
