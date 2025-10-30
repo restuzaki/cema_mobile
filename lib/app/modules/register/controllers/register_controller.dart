@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class LoginController extends GetxController {
+class RegisterController extends GetxController {
   final fullNameController = TextEditingController();
   final passwordController = TextEditingController();
+  final emailController = TextEditingController();
+
   var rememberMe = false.obs;
 
   void toggleRememberMe(bool? value) {
     rememberMe.value = value ?? false;
   }
 
-  void login() {
+  void register() {
     final name = fullNameController.text.trim();
     final password = passwordController.text.trim();
+    final email = emailController.text.trim();
 
-    if (name.isEmpty || password.isEmpty) {
+    if (name.isEmpty || password.isEmpty || email.isEmpty) {
       Get.snackbar(
         "Error",
         "Please fill all fields",
@@ -25,16 +28,12 @@ class LoginController extends GetxController {
 
     Get.snackbar(
       "Success",
-      "Logged in as $name",
+      "Register in as $name",
       snackPosition: SnackPosition.TOP,
     );
   }
 
-  void signUp() {
-    Get.toNamed("/register");
-  }
-
-  void forgotPassword() {
-    Get.toNamed('/forget-password');
+  void signIn() {
+    Get.toNamed("/login");
   }
 }
