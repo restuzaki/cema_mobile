@@ -14,6 +14,7 @@ class HomePage extends StatelessWidget {
     DashboardView(),
     // 2
     ProfilePage(),
+    ProfilePage(),
   ];
 
   @override

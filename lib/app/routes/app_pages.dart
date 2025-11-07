@@ -5,6 +5,10 @@ import 'package:cema_mobile/app/modules/forget_password/views/forget_password_vi
 import 'package:cema_mobile/app/modules/home/views/home_navbar.dart';
 import 'package:cema_mobile/app/modules/login/bindings/login_binding.dart';
 import 'package:cema_mobile/app/modules/login/views/login_view.dart';
+import 'package:cema_mobile/app/modules/privacy_and_policy/bindings/privacy_and_policy_binding.dart';
+import 'package:cema_mobile/app/modules/privacy_and_policy/views/privacy_and_policy_view.dart';
+import 'package:cema_mobile/app/modules/profile/bindings/profile_binding.dart';
+import 'package:cema_mobile/app/modules/profile/views/profile_view.dart';
 import 'package:cema_mobile/app/modules/register/bindings/register_binding.dart';
 import 'package:cema_mobile/app/modules/register/views/register_view.dart';
 import 'package:get/get.dart';
@@ -39,6 +43,16 @@ class AppPages {
       name: _Paths.DASHBOARD,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFILE,
+      page: () => ProfilePage(),
+      binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRIVACYANDPOLICY,
+      page: () => PrivacyPolicyPage(),
+      binding: PrivacyAndPolicyBinding(),
     ),
   ];
 }

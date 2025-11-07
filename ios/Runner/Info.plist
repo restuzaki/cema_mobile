@@ -16,6 +16,10 @@
 		<string>cema mobile</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>App memerlukan akses ke galeri untuk memilih foto profil.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>App memerlukan akses ke kamera untuk mengambil foto profil.</string>
 		<key>CFBundleShortVersionString</key>
 		<string>$(FLUTTER_BUILD_NAME)</string>
 		<key>CFBundleSignature</key>
@@ -31,8 +35,6 @@
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>UISupportedInterfaceOrientations~ipad</key>
 		<array>

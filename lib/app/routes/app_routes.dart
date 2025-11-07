@@ -8,6 +8,8 @@ abstract class Routes {
   static const FORGETPASSWORD = _Paths.FORGETPASSWORD;
   static const REGISTER = _Paths.REGISTER;
   static const DASHBOARD = _Paths.DASHBOARD;
+  static const PROFILE = _Paths.PROFILE;
+  static const PRIVACYANDPOLICY = _Paths.PRIVACYANDPOLICY;
 }
 
 abstract class _Paths {
@@ -17,4 +19,6 @@ abstract class _Paths {
   static const FORGETPASSWORD = '/forget-password';
   static const REGISTER = '/register';
   static const DASHBOARD = '/dashboard';
+  static const PROFILE = '/profile';
+  static const PRIVACYANDPOLICY = '/privacy-and-policy';
 }
