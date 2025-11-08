@@ -106,11 +106,6 @@ class ProfilePage extends StatelessWidget {
                             onTap: () => controller.toEditProfilePage(),
                           ),
                           _buildMenuItem(
-                            icon: Icons.settings_outlined,
-                            title: "Setting",
-                            onTap: () {},
-                          ),
-                          _buildMenuItem(
                             icon: Icons.privacy_tip_outlined,
                             title: "Privasi & Kebijakan",
                             onTap: () {
@@ -120,7 +115,9 @@ class ProfilePage extends StatelessWidget {
                           _buildMenuItem(
                             icon: Icons.support_agent_outlined,
                             title: "Customer Support",
-                            onTap: () {},
+                            onTap: () {
+                              Get.toNamed('/cs-support');
+                            },
                           ),
                           const SizedBox(height: 16),
                           InkWell(

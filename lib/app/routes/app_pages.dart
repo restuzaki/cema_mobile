@@ -1,3 +1,5 @@
+import 'package:cema_mobile/app/modules/cs_support/bindings/cs_support_binding.dart';
+import 'package:cema_mobile/app/modules/cs_support/views/cs_support_view.dart';
 import 'package:cema_mobile/app/modules/dashboard/bindings/dashboard_binding.dart';
 import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
 import 'package:cema_mobile/app/modules/forget_password/bindings/forget_password_binding.dart';
@@ -11,6 +13,8 @@ import 'package:cema_mobile/app/modules/profile/bindings/profile_binding.dart';
 import 'package:cema_mobile/app/modules/profile/views/profile_view.dart';
 import 'package:cema_mobile/app/modules/register/bindings/register_binding.dart';
 import 'package:cema_mobile/app/modules/register/views/register_view.dart';
+import 'package:cema_mobile/app/modules/update_profile/bindings/update_profile_binding.dart';
+import 'package:cema_mobile/app/modules/update_profile/views/update_profile_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/home/bindings/home_binding.dart';
@@ -53,6 +57,16 @@ class AppPages {
       name: _Paths.PRIVACYANDPOLICY,
       page: () => PrivacyPolicyPage(),
       binding: PrivacyAndPolicyBinding(),
+    ),
+    GetPage(
+      name: _Paths.UPDATEPROFILE,
+      page: () => UpdateProfilePage(),
+      binding: UpdateProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.CSSUPPORT,
+      page: () => CustomerSupportPage(),
+      binding: CsSupportBinding(),
     ),
   ];
 }

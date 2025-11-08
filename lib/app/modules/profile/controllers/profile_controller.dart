@@ -25,7 +25,6 @@ class ProfileController extends GetxController {
   Future<void> fetchProfile() async {
     isLoading.value = true;
     try {
-      // Ambil data dari local storage
       nama.value = box.read('nama') ?? 'User Default';
       email.value = box.read('email') ?? 'user@example.com';
       photoUrl.value = box.read('photoUrl') ?? '';
@@ -38,7 +37,8 @@ class ProfileController extends GetxController {
 
   void logout() async {
     await box.erase();
-    Get.offAllNamed('/login-page');
+    Get.offAllNamed('/login');
+    Get.snackbar("Berhasil", "Anda telah logout");
   }
 
   Future<void> pickImage() async {
@@ -71,7 +71,7 @@ class ProfileController extends GetxController {
   }
 
   Future<void> toEditProfilePage() async {
-    var result = await Get.toNamed('/data-pribadi-page');
+    var result = await Get.toNamed('/update-profile');
     if (result == true) {
       await fetchProfile();
     }

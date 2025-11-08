@@ -7,6 +7,8 @@ class CustomFormField extends StatelessWidget {
   final String hintText;
   final String labelText;
   final bool obscureText;
+  final IconData? icon;
+  final int maxLines;
 
   const CustomFormField({
     Key? key,
@@ -15,6 +17,8 @@ class CustomFormField extends StatelessWidget {
     required this.errorMessage,
     required this.hintText,
     required this.labelText,
+    this.icon,
+    this.maxLines = 1,
     this.obscureText = false,
   }) : super(key: key);
 
@@ -26,6 +30,7 @@ class CustomFormField extends StatelessWidget {
         controller: controller,
         keyboardType: typeController,
         obscureText: obscureText,
+        maxLines: maxLines,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return errorMessage;
@@ -37,8 +42,9 @@ class CustomFormField extends StatelessWidget {
           hintText: hintText,
           filled: true,
           fillColor: Colors.grey[100],
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
+          prefixIcon: icon != null ? Icon(icon) : null,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: icon != null ? 16 : 20,
             vertical: 14,
           ),
           border: OutlineInputBorder(

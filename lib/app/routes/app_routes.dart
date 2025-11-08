@@ -10,6 +10,8 @@ abstract class Routes {
   static const DASHBOARD = _Paths.DASHBOARD;
   static const PROFILE = _Paths.PROFILE;
   static const PRIVACYANDPOLICY = _Paths.PRIVACYANDPOLICY;
+  static const UPDATEPROFILE = _Paths.UPDATEPROFILE;
+  static const CSSUPPORT = _Paths.CSSUPPORT;
 }
 
 abstract class _Paths {
@@ -21,4 +23,6 @@ abstract class _Paths {
   static const DASHBOARD = '/dashboard';
   static const PROFILE = '/profile';
   static const PRIVACYANDPOLICY = '/privacy-and-policy';
+  static const UPDATEPROFILE = '/update-profile';
+  static const CSSUPPORT = '/cs-support';
 }
