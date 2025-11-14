@@ -12,6 +12,7 @@ abstract class Routes {
   static const PRIVACYANDPOLICY = _Paths.PRIVACYANDPOLICY;
   static const UPDATEPROFILE = _Paths.UPDATEPROFILE;
   static const CSSUPPORT = _Paths.CSSUPPORT;
+  static const TASKMANAGER = _Paths.TASKMANAGER;
 }
 
 abstract class _Paths {
@@ -25,4 +26,5 @@ abstract class _Paths {
   static const PRIVACYANDPOLICY = '/privacy-and-policy';
   static const UPDATEPROFILE = '/update-profile';
   static const CSSUPPORT = '/cs-support';
+  static const TASKMANAGER = '/taskmanager';
 }

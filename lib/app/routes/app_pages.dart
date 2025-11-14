@@ -15,6 +15,8 @@ import 'package:cema_mobile/app/modules/register/bindings/register_binding.dart'
 import 'package:cema_mobile/app/modules/register/views/register_view.dart';
 import 'package:cema_mobile/app/modules/update_profile/bindings/update_profile_binding.dart';
 import 'package:cema_mobile/app/modules/update_profile/views/update_profile_view.dart';
+import 'package:cema_mobile/app/modules/task_manager/bindings/task_manager_binding.dart';
+import 'package:cema_mobile/app/modules/task_manager/views/task_manager_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/home/bindings/home_binding.dart';
@@ -24,7 +26,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.LOGIN;
+  static const INITIAL = Routes.TASKMANAGER;
 
   static final routes = [
     GetPage(name: _Paths.HOME, page: () => HomePage(), binding: HomeBinding()),
@@ -68,5 +70,10 @@ class AppPages {
       page: () => CustomerSupportPage(),
       binding: CsSupportBinding(),
     ),
+    GetPage(
+      name: _Paths.TASKMANAGER,
+      page: () => TaskManagerPage(),
+      binding: TaskManagerBinding(),
+     )
   ];
 }
