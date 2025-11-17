@@ -17,7 +17,7 @@ void main() async {
       title: "Application",
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light, // or ThemeMode.system to follow system theme
+      themeMode: ThemeMode.light,
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     ),

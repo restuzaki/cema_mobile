@@ -15,6 +15,7 @@ abstract class Routes {
   static const TASKMANAGER = _Paths.TASKMANAGER;
   static const NOTIFICATION = _Paths.NOTIFICATION;
   static const TAMBAHPROYEK = _Paths.TAMBAHPROYEK;
+  static const PROJECT_DETAILS = _Paths.PROJECT_DETAILS;
 }
 
 abstract class _Paths {
@@ -31,4 +32,5 @@ abstract class _Paths {
   static const TASKMANAGER = '/taskmanager';
   static const NOTIFICATION = '/notification';
   static const TAMBAHPROYEK = '/tambahproyek';
+  static const PROJECT_DETAILS = '/project-details';
 }

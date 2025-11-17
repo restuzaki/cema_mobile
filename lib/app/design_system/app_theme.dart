@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'tokens/colors.dart';
 import 'tokens/typography.dart';
-import 'tokens/shadows.dart';
 import 'tokens/dimensions.dart';
 
 /// Main theme configuration for the application

@@ -9,3 +9,11 @@ export 'tokens/dimensions.dart';
 
 // Theme
 export 'app_theme.dart';
+
+// Widgets
+export 'widgets/custom_button.dart';
+export 'widgets/custom_header.dart';
+export 'widgets/custom_filter.dart';
+export 'widgets/status_label.dart';
+export 'widgets/expense_card.dart';
+export 'widgets/custom_navbar.dart';
