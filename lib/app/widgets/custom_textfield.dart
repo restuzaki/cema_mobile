@@ -11,7 +11,7 @@ class CustomFormField extends StatelessWidget {
   final int maxLines;
 
   const CustomFormField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.typeController,
     required this.errorMessage,
@@ -20,7 +20,7 @@ class CustomFormField extends StatelessWidget {
     this.icon,
     this.maxLines = 1,
     this.obscureText = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

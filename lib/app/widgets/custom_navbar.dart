@@ -6,7 +6,8 @@ class CustomNavButton extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  CustomNavButton({
+  const CustomNavButton({
+    super.key,
     required this.icon,
     required this.label,
     required this.isSelected,

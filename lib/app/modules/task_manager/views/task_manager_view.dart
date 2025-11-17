@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/task_manager_controller.dart';
 
 class TaskManagerPage extends GetView<TaskManagerController> {
-  const TaskManagerPage({Key? key}) : super(key: key);
+  const TaskManagerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,11 @@ class TaskManagerPage extends GetView<TaskManagerController> {
       appBar: AppBar(
         title: const Text(
           "Project Overview",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w800, fontSize: 20),
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+          ),
         ),
         backgroundColor: Colors.transparent, // Agar menyatu dengan background
         elevation: 0,
@@ -28,7 +32,9 @@ class TaskManagerPage extends GetView<TaskManagerController> {
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF4F4), // Warna hijau tosca muda mirip desain
+                color: const Color(
+                  0xFFEAF4F4,
+                ), // Warna hijau tosca muda mirip desain
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Column(
@@ -39,25 +45,31 @@ class TaskManagerPage extends GetView<TaskManagerController> {
                     children: [
                       const Text(
                         "Project",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       InkWell(
                         onTap: () {},
                         child: const Icon(Icons.more_vert, color: Colors.grey),
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   // List Project
                   Expanded(
-                    child: Obx(() => ListView.separated(
-                      itemCount: controller.progress.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final project = controller.progress[index];
-                        return _buildProjectCard(project);
-                      },
-                    )),
+                    child: Obx(
+                      () => ListView.separated(
+                        itemCount: controller.progress.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final project = controller.progress[index];
+                          return _buildProjectCard(project);
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -96,19 +108,31 @@ class TaskManagerPage extends GetView<TaskManagerController> {
                   children: [
                     Text(
                       project['owner'], // Mengakses Map dengan key 'owner'
-                      style: TextStyle(fontSize: 12, color: Colors.grey[700], fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[700],
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       project['title'], // Mengakses Map dengan key 'title'
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xFF2D3E40)),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF2D3E40),
+                      ),
                     ),
                   ],
                 ),
                 // Teks Persentase Kanan
                 Text(
                   "${progressPercent.toInt()} %",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[600]),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[600],
+                  ),
                 ),
               ],
             ),
@@ -120,7 +144,9 @@ class TaskManagerPage extends GetView<TaskManagerController> {
                 value: progressValue, // Nilai harus antara 0.0 - 1.0
                 minHeight: 8,
                 backgroundColor: Colors.grey[300],
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4A90E2)), // Warna biru
+                valueColor: const AlwaysStoppedAnimation<Color>(
+                  Color(0xFF4A90E2),
+                ), // Warna biru
               ),
             ),
           ],

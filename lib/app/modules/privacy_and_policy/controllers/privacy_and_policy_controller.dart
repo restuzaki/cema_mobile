@@ -1,5 +1,4 @@
 import 'package:cema_mobile/app/data/model/policy.dart';
-import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
