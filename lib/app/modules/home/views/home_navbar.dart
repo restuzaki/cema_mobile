@@ -1,3 +1,4 @@
+import 'package:cema_mobile/app/modules/task_detail/views/task_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
@@ -13,7 +14,8 @@ class HomePage extends StatelessWidget {
   final List<Widget> _pages = [
     DashboardView(),
     // 2
-    ProfilePage(),
+    TaskDetailPage(),
+    // 3
     ProfilePage(),
   ];
 
