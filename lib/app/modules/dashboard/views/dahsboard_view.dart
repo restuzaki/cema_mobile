@@ -14,36 +14,33 @@ class DashboardView extends GetView<DashboardController> {
     const Color lightGreenColor = Color(0xFFEAF5DC);
     const Color lightGreyColor = Color(0xFFF5F5F5);
 
-    return Scaffold(
-      appBar: _buildAppBar(),
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionHeader("Pesan Saya"),
-            const SizedBox(height: 16),
-            _buildTaskCard(greenColor, redColor, lightGreenColor),
-            const SizedBox(height: 16),
-            _buildProjectCard(greenColor, redColor, lightGreyColor),
-            const SizedBox(height: 24),
-            _buildSectionHeader("Proyek Berisiko"),
-            const SizedBox(height: 16),
-            _buildRiskyProjectHeader(Colors.black),
-            const SizedBox(height: 20),
-            _buildRiskyProjectList(),
-          ],
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: _buildAppBar(),
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader("Pesan Saya"),
+                const SizedBox(height: 16),
+                _buildTaskCard(greenColor, redColor, lightGreenColor),
+                const SizedBox(height: 16),
+                _buildProjectCard(greenColor, redColor, lightGreyColor),
+                const SizedBox(height: 24),
+                _buildSectionHeader("Proyek Berisiko"),
+                const SizedBox(height: 16),
+                _buildRiskyProjectHeader(Colors.black),
+                const SizedBox(height: 20),
+                _buildRiskyProjectList(),
+              ],
+            ),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: greenColor,
-        foregroundColor: Colors.white,
-        elevation: 1,
-        shape: const CircleBorder(),
-        child: const Icon(Icons.add, size: 32),
-      ),
+        _buildFabMenu(greenColor),
+      ],
     );
   }
 
@@ -195,8 +192,8 @@ class DashboardView extends GetView<DashboardController> {
                 Row(
                   children: [
                     Container(
-                      height: 80,
-                      width: 90,
+                      height: 55,
+                      width: 60,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: lightGreenColor,
@@ -210,8 +207,8 @@ class DashboardView extends GetView<DashboardController> {
                     ),
                     const SizedBox(width: 4),
                     Container(
-                      height: 80,
-                      width: 90,
+                      height: 55,
+                      width: 60,
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: lightGreenColor,
@@ -382,43 +379,6 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildRiskTabs() {
-    final List<String> tabs = ["All", "Darurat", "Berisiko"];
-
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: List.generate(tabs.length, (index) {
-          bool isSelected = controller.selectedRiskTabIndex.value == index;
-          return Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: ChoiceChip(
-              label: Text(tabs[index]),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) {
-                  controller.changeRiskTab(index);
-                }
-              },
-              selectedColor: const Color(0xFF8DC63F),
-              backgroundColor: Colors.grey.shade200,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: const BorderSide(color: Colors.transparent),
-              ),
-              showCheckmark: false,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            ),
-          );
-        }),
       ),
     );
   }
@@ -667,6 +627,97 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildMiniFab({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onPressed,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      customBorder: const CircleBorder(),
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          border: Border.all(color: color, width: 2.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: color, size: 30),
+      ),
+    );
+  }
+
+  Widget _buildFabMenu(Color greenColor) {
+    return Positioned(
+      bottom: 20.0,
+      right: 20.0,
+      child: Obx(
+        () => Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            AnimatedSlide(
+              offset: controller.isFabMenuOpen.value
+                  ? Offset.zero
+                  : const Offset(0, 0.5),
+              duration: const Duration(milliseconds: 200),
+              child: AnimatedOpacity(
+                opacity: controller.isFabMenuOpen.value ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: IgnorePointer(
+                  ignoring: !controller.isFabMenuOpen.value,
+                  child: Column(
+                    children: [
+                      _buildMiniFab(
+                        icon: Icons.monetization_on_outlined,
+                        color: greenColor,
+                        onPressed: () {
+                          controller.toggleFabMenu();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _buildMiniFab(
+                        icon: Icons.library_books,
+                        color: greenColor,
+                        onPressed: () {
+                          controller.toggleFabMenu();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            FloatingActionButton(
+              onPressed: controller.toggleFabMenu,
+              backgroundColor: greenColor,
+              foregroundColor: Colors.white,
+              elevation: 2,
+              shape: const CircleBorder(),
+              child: AnimatedRotation(
+                turns: controller.isFabMenuOpen.value ? 0 : 500,
+                duration: const Duration(milliseconds: 250),
+                child: Icon(
+                  controller.isFabMenuOpen.value ? Icons.close : Icons.add,
+                  size: 32,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

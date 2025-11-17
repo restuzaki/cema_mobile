@@ -4,6 +4,7 @@ import '../../../data/model/risk.dart';
 
 class DashboardController extends GetxController {
   final RxInt selectedRiskTabIndex = 0.obs;
+  final RxBool isFabMenuOpen = false.obs;
 
   void changeRiskTab(int index) {
     selectedRiskTabIndex.value = index;
@@ -82,5 +83,9 @@ class DashboardController extends GetxController {
       default:
         return allProjects;
     }
+  }
+
+  void toggleFabMenu() {
+    isFabMenuOpen.toggle();
   }
 }
