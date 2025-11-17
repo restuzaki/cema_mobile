@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class TaskManagerController extends GetxController {
+class TaskDetailController extends GetxController {
   var currentProjectIndex = 0.obs;
   var isBudgetVisible = true.obs;
 
