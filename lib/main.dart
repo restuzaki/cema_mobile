@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
+import 'app/design_system/design_system.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {
@@ -14,8 +15,9 @@ void main() async {
   runApp(
     GetMaterialApp(
       title: "Application",
-      theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'Poppins'),
-
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.light, // or ThemeMode.system to follow system theme
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
     ),
