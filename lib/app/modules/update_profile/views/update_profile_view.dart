@@ -8,7 +8,7 @@ import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_textfield.dart';
 
 class UpdateProfilePage extends GetView<UpdateProfileController> {
-  const UpdateProfilePage({Key? key}) : super(key: key);
+  const UpdateProfilePage({super.key});
 
   @override
   Widget build(BuildContext context) {
