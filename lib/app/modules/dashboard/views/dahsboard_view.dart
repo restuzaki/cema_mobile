@@ -1,424 +1,263 @@
 import 'package:cema_mobile/app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
 import 'package:get/get.dart';
+
+import '../../../data/model/risk.dart';
 
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    const Color greenColor = Color(0xFF8DC63F);
+    const Color redColor = Color(0xFFC94040);
+    const Color lightGreenColor = Color(0xFFEAF5DC);
+    const Color lightGreyColor = Color(0xFFF5F5F5);
+
     return Scaffold(
+      appBar: _buildAppBar(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionHeader("Pesan Saya"),
+            const SizedBox(height: 16),
+            _buildTaskCard(greenColor, redColor, lightGreenColor),
+            const SizedBox(height: 16),
+            _buildProjectCard(greenColor, redColor, lightGreyColor),
+            const SizedBox(height: 24),
+            _buildSectionHeader("Proyek Berisiko"),
+            const SizedBox(height: 16),
+            _buildRiskyProjectHeader(Colors.black),
+            const SizedBox(height: 20),
+            _buildRiskyProjectList(),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: greenColor,
+        foregroundColor: Colors.white,
+        elevation: 1,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, size: 32),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      toolbarHeight: 80,
+      backgroundColor: Colors.white,
+      automaticallyImplyLeading: false,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      elevation: 0,
+      title: Row(
+        children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Asep Toktok",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              Text(
+                "Project Manager",
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFF7AC943), width: 2),
+          ),
+          child: const Icon(
+            Icons.notifications_none,
+            size: 22,
+            color: Color(0xFF7AC943),
+          ),
+        ),
+        const SizedBox(width: 16),
+        const CircleAvatar(
+          radius: 34,
+          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=56'),
+        ),
+        const SizedBox(width: 5),
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: const Text(
+            "Lihat Semua",
+            style: TextStyle(
+              color: Color(0xFF8DC63F),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTaskCard(
+    Color greenColor,
+    Color redColor,
+    Color lightGreenColor,
+  ) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            SizedBox(height: 20),
-            Container(
-              height: 70,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Asep Tektek",
+                      Text(
+                        "Task Name",
                         style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 4),
                       Text(
-                        "Project Manager",
-                        style: TextStyle(fontSize: 9, color: Colors.black),
+                        "Project Name",
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ],
                   ),
-                  const SizedBox(width: 10),
-                  CircleAvatar(
-                    backgroundColor: Colors.grey[300],
-                    child: const Icon(Icons.person, color: Colors.white),
-                  ),
-                  const SizedBox(width: 16),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 250,
-                    child: PageView.builder(
-                      onPageChanged: controller.changeProject,
-                      itemCount: controller.projects.length,
-                      itemBuilder: (context, index) {
-                        final project = controller.projects[index];
-                        final double progressAsDouble =
-                            (project['progress'] as num?)?.toDouble() ?? 0.0;
-
-                        final double clampedProgress =
-                            progressAsDouble.isNaN ||
-                                progressAsDouble.isInfinite
-                            ? 0.0
-                            : progressAsDouble;
-
-                        final double progressValue = (clampedProgress / 100.0)
-                            .clamp(0.0, 1.0);
-
-                        final double angle =
-                            (progressValue * 2 * math.pi) - (math.pi / 2);
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 8),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 5,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                SizedBox(height: 16),
-                                Center(
-                                  child: Text(
-                                    project['title'],
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          height: 100,
-                                          child: CircularProgressIndicator(
-                                            value: progressValue,
-                                            strokeWidth: 5,
-                                            color: Color(0xFF6FB327),
-                                            backgroundColor: Colors.grey[300],
-                                          ),
-                                        ),
-                                        Column(
-                                          children: [
-                                            Text(
-                                              "${project['progress']}%",
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xFF6FB327),
-                                              ),
-                                            ),
-                                            Text(
-                                              "Completed",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xFF6FB327),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Positioned.fill(
-                                          child: Align(
-                                            alignment: Alignment(
-                                              math.cos(angle),
-                                              math.sin(angle),
-                                            ),
-
-                                            child: Container(
-                                              width: 10,
-                                              height: 10,
-                                              decoration: BoxDecoration(
-                                                color: Color(0xFF6FB327),
-                                                shape: BoxShape.circle,
-
-                                                border: Border.all(
-                                                  color: Color(0xFF6FB327),
-                                                  width: 4,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Icon(
-                                              Icons.account_circle_outlined,
-                                              size: 14,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(width: 5),
-                                            Text(
-                                              project['owner'],
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.location_on_outlined,
-                                              size: 14,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(width: 5),
-                                            Text(
-                                              project['location'],
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.home,
-                                              size: 14,
-                                              color: Colors.black,
-                                            ),
-                                            SizedBox(width: 5),
-                                            Text(
-                                              project['category'],
-                                              style: TextStyle(fontSize: 15),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 20),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 6,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF6FB327),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 10,
-                                                height: 10,
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xFF6FB327),
-                                                  shape: BoxShape.circle,
-
-                                                  border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 2,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(width: 6),
-                                              Text(
-                                                project['status'],
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Obx(() {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(controller.projects.length, (
-                        index,
-                      ) {
-                        bool isActive =
-                            (index == controller.currentProjectIndex.value);
-
-                        return Container(
-                          width: 8.0,
-                          height: 8.0,
-                          margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: isActive
-                                ? const Color(0xFF8BC34A)
-                                : Colors.grey[400],
-                          ),
-                        );
-                      }),
-                    );
-                  }),
-                  const SizedBox(height: 20),
-                  const Center(
-                    child: Text(
-                      "Project Overview",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                ),
+                Row(
+                  children: [
+                    const Icon(Icons.person_outline, color: Colors.green),
+                    const SizedBox(width: 6),
+                    const CircleAvatar(
+                      radius: 12,
+                      backgroundImage: NetworkImage(
+                        'https://i.pravatar.cc/150?img=1',
                       ),
                     ),
+                    const CircleAvatar(
+                      radius: 12,
+                      backgroundImage: NetworkImage(
+                        'https://i.pravatar.cc/150?img=2',
+                      ),
+                    ),
+                    const CircleAvatar(
+                      radius: 12,
+                      backgroundImage: NetworkImage(
+                        'https://i.pravatar.cc/150?img=3',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      height: 80,
+                      width: 90,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: lightGreenColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.description_outlined,
+                        color: Colors.yellowAccent.shade700,
+                        size: 34,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      height: 80,
+                      width: 90,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: lightGreenColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.attach_file,
+                        color: greenColor,
+                        size: 34,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => controller.acceptTask("TASK123"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: greenColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text("Accept"),
                   ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: () => controller.rejectTask("TASK123"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: redColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Ongoing Task",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ListView.builder(
-                          itemCount: 3,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Pembangunan Taman",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Text(
-                                        "Developing app",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.flag,
-                                            size: 10,
-                                            color: Colors.grey,
-                                          ),
-                                          Text(
-                                            "18 Des",
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.circle,
-                                                size: 10,
-                                                color: Colors.green,
-                                              ),
-                                              Text(
-                                                "High Priority",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 10,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Icon(
-                                    Icons.circle_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            controller.toggleBudgetVisibility();
-                          },
-                          child: const Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              "See Details >",
-                              style: TextStyle(color: Colors.green),
-                            ),
-                          ),
-                        ),
-                        Obx(
-                          () => controller.isBudgetVisible.value
-                              ? _buildBudgetDetails(context)
-                              : const SizedBox.shrink(),
-                        ),
-                      ],
-                    ),
+                    child: const Text("Reject"),
                   ),
                 ],
               ),
@@ -429,103 +268,406 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
-  Widget _buildBudgetDetails(BuildContext context) {
-    return Obx(() {
-      return Container(
-        padding: const EdgeInsets.only(top: 20),
+  Widget _buildProjectCard(
+    Color greenColor,
+    Color redColor,
+    Color lightGreyColor,
+  ) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Budget Spent",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 10),
-            Container(
-              height: 190,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/card.png'),
-                  fit: BoxFit.fill,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Project Name",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text("Desc", style: TextStyle(color: Colors.grey)),
+                  ],
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: lightGreyColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.access_time, color: Colors.grey, size: 16),
+                      SizedBox(width: 4),
+                      Text("Phase", style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              decoration: BoxDecoration(
+                color: lightGreyColor,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Stack(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "Budget Spent",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Icon(
+                    Icons.monetization_on_rounded,
+                    color: Colors.grey.shade600,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "Rp 90.000.000",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
-
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          controller.isBudgetVisible.value
-                              ? "Rp120.000.000"
-                              : "•••••••••",
-                          style: const TextStyle(
-                            color: Color(0xFF6FB327),
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              "Of Rp200.000.000",
-                              style: TextStyle(color: Colors.white70),
-                            ),
-
-                            Row(
-                              children: [
-                                const Text(
-                                  "60%",
-                                  style: TextStyle(color: Color(0xFF6FB327)),
-                                ),
-                                Icon(
-                                  Icons.keyboard_arrow_right_rounded,
-                                  color: Color(0xFF6FB327),
-                                  size: 16,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: IconButton(
-                      icon: Icon(
-                        controller.isBudgetVisible.value
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.white,
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () => controller.acceptTask("TASK123"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: greenColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                      onPressed: controller.toggleBudgetVisibility,
                     ),
+                    child: const Text("Accept"),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: () => controller.rejectTask("TASK123"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: redColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text("Reject"),
                   ),
                 ],
               ),
             ),
           ],
         ),
-      );
-    });
+      ),
+    );
+  }
+
+  Widget _buildRiskTabs() {
+    final List<String> tabs = ["All", "Darurat", "Berisiko"];
+
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: List.generate(tabs.length, (index) {
+          bool isSelected = controller.selectedRiskTabIndex.value == index;
+          return Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: ChoiceChip(
+              label: Text(tabs[index]),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) {
+                  controller.changeRiskTab(index);
+                }
+              },
+              selectedColor: const Color(0xFF8DC63F),
+              backgroundColor: Colors.grey.shade200,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : Colors.black,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: const BorderSide(color: Colors.transparent),
+              ),
+              showCheckmark: false,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildRiskyProjectList() {
+    return Obx(
+      () => ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: controller.filteredProjects.length,
+        itemBuilder: (context, index) {
+          final project = controller.filteredProjects[index];
+          return _buildRiskyProjectCard(project);
+        },
+      ),
+    );
+  }
+
+  Widget _buildRiskyProjectHeader(Color blackColor) {
+    final List<String> tabs = ["All", "Darurat", "Berisiko"];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Obx(
+                () => Row(
+                  children: List.generate(tabs.length, (index) {
+                    bool isSelected =
+                        controller.selectedRiskTabIndex.value == index;
+                    return GestureDetector(
+                      onTap: () => controller.changeRiskTab(index),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: isSelected
+                            ? BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: blackColor,
+                                    width: 3,
+                                  ),
+                                ),
+                              )
+                            : null,
+                        child: Text(
+                          tabs[index],
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.black
+                                : Colors.grey.shade600,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRiskyProjectCard(Project project) {
+    Color riskTagColor;
+    Color riskBgColor;
+    String riskText;
+
+    switch (project.riskType) {
+      case RiskType.berisiko:
+        riskTagColor = const Color(0xFFC59400);
+        riskBgColor = const Color(0xFFFFF7E6);
+        riskText = "Berisiko";
+        break;
+      case RiskType.darurat:
+        riskTagColor = const Color(0xFFC94040);
+        riskBgColor = const Color(0xFFFEE6E6);
+        riskText = "Darurat";
+        break;
+      case RiskType.normal:
+      default:
+        riskTagColor = Colors.grey.shade600;
+        riskBgColor = Colors.grey.shade200;
+        riskText = "Normal";
+        break;
+    }
+
+    Color cpiColor = project.cpi < 0.9
+        ? const Color(0xFFC94040)
+        : const Color(0xFF8DC63F);
+    Color spiColor = project.spi < 0.9
+        ? const Color(0xFFC94040)
+        : const Color(0xFF8DC63F);
+    Color cpiBgColor = project.cpi < 0.9
+        ? const Color(0xFFFEE6E6)
+        : const Color(0xFFEAF5DC);
+    Color spiBgColor = project.spi < 0.9
+        ? const Color(0xFFFEE6E6)
+        : const Color(0xFFEAF5DC);
+
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      project.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          color: Colors.grey.shade600,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          project.phase,
+                          style: TextStyle(color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: riskBgColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: riskTagColor, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        riskText,
+                        style: TextStyle(
+                          color: riskTagColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                _buildMetricChip("CPI", project.cpi, cpiColor, cpiBgColor),
+                const SizedBox(width: 12),
+                _buildMetricChip("SPI", project.spi, spiColor, spiBgColor),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    Get.snackbar("Detail", "Melihat detail ${project.name}");
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        "Lihat Detail",
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.grey.shade600,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetricChip(
+    String label,
+    double value,
+    Color textColor,
+    Color bgColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: textColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            value.toStringAsFixed(2),
+            style: TextStyle(
+              color: textColor,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
