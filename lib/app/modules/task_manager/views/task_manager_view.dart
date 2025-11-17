@@ -1,156 +1,265 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../controllers/task_manager_controller.dart';
 
-class TaskManagerPage extends GetView<TaskManagerController> {
+class TaskManagerPage extends StatelessWidget {
   const TaskManagerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100], // Warna background dasar
-      appBar: AppBar(
-        title: const Text(
-          "Project Overview",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w800,
-            fontSize: 20,
-          ),
-        ),
-        backgroundColor: Colors.transparent, // Agar menyatu dengan background
-        elevation: 0,
-        centerTitle: false, // Judul rata kiri sesuai desain
+      backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        onPressed: () {},
+        child: const Icon(Icons.add, size: 32, color: Colors.white),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 10),
-          // Container hijau muda yang melengkung
-          Expanded(
-            child: Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(
-                  0xFFEAF4F4,
-                ), // Warna hijau tosca muda mirip desain
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Header "Project" dan titik tiga
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Project",
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text(
+                        "Asep Toktok",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 22,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      InkWell(
-                        onTap: () {},
-                        child: const Icon(Icons.more_vert, color: Colors.grey),
+                      SizedBox(height: 4),
+                      Text(
+                        "Project Manager",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  // List Project
-                  Expanded(
-                    child: Obx(
-                      () => ListView.separated(
-                        itemCount: controller.progress.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
-                        itemBuilder: (context, index) {
-                          final project = controller.progress[index];
-                          return _buildProjectCard(project);
-                        },
+
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: Colors.green.shade100,
+                        child: Icon(Icons.notifications, color: Colors.green),
                       ),
-                    ),
+                      const SizedBox(width: 10),
+                      const CircleAvatar(
+                        radius: 22,
+                        child: Icon(Icons.people_alt),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ),
+
+              const SizedBox(height: 20),
+
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "Ekspor Portofolio",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Icon(Icons.arrow_outward, color: Colors.white),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              Row(
+                children: [
+                  _tabItem("All", isActive: true),
+                  const SizedBox(width: 20),
+                  _tabItem("Berlangsung"),
+                  const SizedBox(width: 20),
+                  _tabItem("Selesai"),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              Container(
+                height: 3,
+                width: 24,
+                color: Colors.black,
+                margin: const EdgeInsets.only(left: 0, top: 2),
+              ),
+
+              const SizedBox(height: 20),
+
+              _projectCard(
+                title: "Project Name",
+                phase: "Phase",
+                client: "Client name",
+                badge: "Berisiko",
+                badgeColor: Colors.yellow.shade700,
+                cpi: "0.91",
+                spi: "1.1",
+              ),
+
+              const SizedBox(height: 14),
+
+              _projectCard(
+                title: "Project Name",
+                phase: "Phase",
+                client: "Client name",
+                badge: "Darurat",
+                badgeColor: Colors.red.shade700,
+                cpi: "0.8",
+                spi: "1.1",
+              ),
+
+              const SizedBox(height: 60),
+            ],
           ),
-          const SizedBox(height: 16), // Spasi bawah sebelum navbar (jika ada)
+        ),
+      ),
+    );
+  }
+
+  Widget _tabItem(String label, {bool isActive = false}) {
+    return Text(
+      label,
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+        color: isActive ? Colors.black : Colors.grey,
+      ),
+    );
+  }
+
+  Widget _projectCard({
+    required String title,
+    required String phase,
+    required String client,
+    required String badge,
+    required Color badgeColor,
+    required String cpi,
+    required String spi,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(16),
+        color: Colors.white,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: badgeColor.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  badge,
+                  style: TextStyle(
+                    color: badgeColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 6),
+
+          Row(
+            children: [
+              const Icon(Icons.circle, size: 14, color: Colors.grey),
+              const SizedBox(width: 6),
+              Text(
+                "$phase   |   $client",
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _scoreBox("CPI", cpi, Colors.orange.shade100),
+                  const SizedBox(width: 12),
+                  _scoreBox("SPI", spi, Colors.green.shade100),
+                ],
+              ),
+              Row(
+                children: const [
+                  Text(
+                    "Lihat Detail",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildProjectCard(Map<String, dynamic> project) {
-    // Konversi progress dari skala 100 ke skala 0.0 - 1.0 untuk LinearProgressIndicator
-    double progressPercent = ((project['progress'] ?? 0) as num).toDouble();
-    double progressValue = progressPercent / 100.0;
-
-    return InkWell(
-      onTap: () => controller.goToDetail(project),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.6), // Putih agak transparan
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Kolom Teks Kiri
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      project['owner'], // Mengakses Map dengan key 'owner'
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      project['title'], // Mengakses Map dengan key 'title'
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF2D3E40),
-                      ),
-                    ),
-                  ],
-                ),
-                // Teks Persentase Kanan
-                Text(
-                  "${progressPercent.toInt()} %",
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Progress Bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: progressValue, // Nilai harus antara 0.0 - 1.0
-                minHeight: 8,
-                backgroundColor: Colors.grey[300],
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  Color(0xFF4A90E2),
-                ), // Warna biru
-              ),
-            ),
-          ],
-        ),
+  Widget _scoreBox(String title, String value, Color bgColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }
