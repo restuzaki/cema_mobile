@@ -570,6 +570,7 @@ class DashboardView extends GetView<DashboardController> {
                 TextButton(
                   onPressed: () {
                     Get.snackbar("Detail", "Melihat detail ${project.name}");
+                    Get.to(() => const ProjectDetailView());
                   
                   },
                   child: Row(

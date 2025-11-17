@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/project_detail_controller.dart';
 
+
 class ProjectDetailView extends StatelessWidget {
   const ProjectDetailView({Key? key}) : super(key: key);
 
@@ -50,7 +51,6 @@ class ProjectDetailView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // main tabs (centered and larger)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
@@ -127,7 +127,6 @@ class ProjectDetailView extends StatelessWidget {
                           ),
                           const SizedBox(height: 12),
 
-                          // small filters
                           Obx(() => Row(
                                 children: List.generate(4, (i) {
                                   final labels = ['Semua', 'Berlangsung', 'Terlambat', 'Selesai'];
@@ -180,7 +179,6 @@ class ProjectDetailView extends StatelessWidget {
                                     child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        // left info
                                         Expanded(
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +201,6 @@ class ProjectDetailView extends StatelessWidget {
                                           ),
                                         ),
 
-                                        // right column: phase and button
                                         Column(
                                           crossAxisAlignment: CrossAxisAlignment.end,
                                           children: [
@@ -240,7 +237,6 @@ class ProjectDetailView extends StatelessWidget {
 
                           const SizedBox(height: 28),
 
-                          // spacer for floating button overlap
                         ],
                       ),
                     ),
@@ -251,7 +247,6 @@ class ProjectDetailView extends StatelessWidget {
               ),
             ),
 
-            // floating-like add button aligned to bottom-right (upsized)
             Padding(
               padding: const EdgeInsets.only(right: 22, bottom: 16),
               child: Align(
