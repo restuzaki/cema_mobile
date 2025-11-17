@@ -50,7 +50,7 @@ class AppColors {
   static const Color backgroundDark = neutral900;
 
   // Card background colors
-  static const Color cardBackgroundLight = neutral100;
+  static const Color cardBackgroundLight = neutral000;
   static const Color cardBackgroundDark = neutral800;
 
   // Divider colors

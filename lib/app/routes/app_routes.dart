@@ -14,6 +14,7 @@ abstract class Routes {
   static const CSSUPPORT = _Paths.CSSUPPORT;
   static const TASKMANAGER = _Paths.TASKMANAGER;
   static const TAMBAHPROYEK = _Paths.TAMBAHPROYEK;
+  static const PROJECT_DETAILS = _Paths.PROJECT_DETAILS;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const CSSUPPORT = '/cs-support';
   static const TASKMANAGER = '/taskmanager';
   static const TAMBAHPROYEK = '/tambahproyek';
+  static const PROJECT_DETAILS = '/project-details';
 }

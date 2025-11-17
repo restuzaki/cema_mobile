@@ -19,6 +19,8 @@ import 'package:cema_mobile/app/modules/task_manager/bindings/task_manager_bindi
 import 'package:cema_mobile/app/modules/task_manager/views/task_manager_view.dart';
 import 'package:cema_mobile/app/modules/tambah_proyek/bindings/tambah_proyek_binding.dart';
 import 'package:cema_mobile/app/modules/tambah_proyek/views/tambah_proyek_view.dart';
+import 'package:cema_mobile/app/modules/project_detail/bindings/project_detail_bindings.dart';
+import 'package:cema_mobile/app/modules/project_detail/view/project_detail_view.dart';
 import 'package:get/get.dart';
 
 import '../modules/home/bindings/home_binding.dart';
@@ -78,9 +80,14 @@ class AppPages {
       binding: TaskManagerBinding(),
     ),
     GetPage(
-      name: _Paths.TAMBAHPROYEK, 
-      page: () => TambahProyekPage(), 
+      name: _Paths.TAMBAHPROYEK,
+      page: () => TambahProyekPage(),
       binding: TambahProyekBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROJECT_DETAILS,
+      page: () => const ProjectDetailView(),
+      binding: ProjectDetailBinding(),
     ),
   ];
 }
