@@ -1,4 +1,5 @@
 import 'package:cema_mobile/app/modules/dashboard/controllers/dashboard_controller.dart';
+import 'package:cema_mobile/app/modules/project_detail/view/project_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -609,6 +610,7 @@ class DashboardView extends GetView<DashboardController> {
                 TextButton(
                   onPressed: () {
                     Get.snackbar("Detail", "Melihat detail ${project.name}");
+                  
                   },
                   child: Row(
                     children: [
