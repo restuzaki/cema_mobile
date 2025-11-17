@@ -75,17 +75,20 @@ class DashboardView extends GetView<DashboardController> {
         ],
       ),
       actions: [
-        Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFF7AC943), width: 2),
-          ),
-          child: const Icon(
-            Icons.notifications_none,
-            size: 22,
-            color: Color(0xFF7AC943),
+        GestureDetector(
+          onTap: () => Get.toNamed('/notification'),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF7AC943), width: 2),
+            ),
+            child: const Icon(
+              Icons.notifications_none,
+              size: 22,
+              color: Color(0xFF7AC943),
+            ),
           ),
         ),
         const SizedBox(width: 16),
@@ -571,7 +574,6 @@ class DashboardView extends GetView<DashboardController> {
                   onPressed: () {
                     Get.snackbar("Detail", "Melihat detail ${project.name}");
                     Get.to(() => const ProjectDetailView());
-                  
                   },
                   child: Row(
                     children: [

@@ -1,6 +1,6 @@
 part of 'app_pages.dart';
-// DO NOT EDIT. This is code generated via package:get_cli/get_cli.dart
 
+// DO NOT EDIT. This is code generated via package:get_cli/get_cli.dart
 abstract class Routes {
   Routes._();
   static const HOME = _Paths.HOME;
@@ -13,6 +13,7 @@ abstract class Routes {
   static const UPDATEPROFILE = _Paths.UPDATEPROFILE;
   static const CSSUPPORT = _Paths.CSSUPPORT;
   static const TASKMANAGER = _Paths.TASKMANAGER;
+  static const NOTIFICATION = _Paths.NOTIFICATION;
   static const TAMBAHPROYEK = _Paths.TAMBAHPROYEK;
 }
 
@@ -28,5 +29,6 @@ abstract class _Paths {
   static const UPDATEPROFILE = '/update-profile';
   static const CSSUPPORT = '/cs-support';
   static const TASKMANAGER = '/taskmanager';
+  static const NOTIFICATION = '/notification';
   static const TAMBAHPROYEK = '/tambahproyek';
 }

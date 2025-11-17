@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import '../../../widgets/custom_circle.dart';
 
 class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(ProfileController());

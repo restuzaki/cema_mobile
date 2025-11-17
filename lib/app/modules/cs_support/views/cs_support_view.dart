@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CustomerSupportPage extends GetView<CustomerSupportController> {
-  const CustomerSupportPage({Key? key}) : super(key: key);
+  const CustomerSupportPage({super.key});
 
   @override
   Widget build(BuildContext context) {

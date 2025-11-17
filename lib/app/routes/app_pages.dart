@@ -17,6 +17,9 @@ import 'package:cema_mobile/app/modules/update_profile/bindings/update_profile_b
 import 'package:cema_mobile/app/modules/update_profile/views/update_profile_view.dart';
 import 'package:cema_mobile/app/modules/task_manager/bindings/task_manager_binding.dart';
 import 'package:cema_mobile/app/modules/task_manager/views/task_manager_view.dart';
+import 'package:cema_mobile/app/modules/notification/bindings/notification_binding.dart';
+import 'package:cema_mobile/app/modules/notification/views/notification_screen.dart';
+
 import 'package:cema_mobile/app/modules/tambah_proyek/bindings/tambah_proyek_binding.dart';
 import 'package:cema_mobile/app/modules/tambah_proyek/views/tambah_proyek_view.dart';
 import 'package:get/get.dart';
@@ -78,8 +81,13 @@ class AppPages {
       binding: TaskManagerBinding(),
     ),
     GetPage(
-      name: _Paths.TAMBAHPROYEK, 
-      page: () => TambahProyekPage(), 
+      name: _Paths.NOTIFICATION,
+      page: () => NotificationScreen(isPM: true),
+      binding: NotificationBinding(),
+    ),
+    GetPage(
+      name: _Paths.TAMBAHPROYEK,
+      page: () => TambahProyekPage(),
       binding: TambahProyekBinding(),
     ),
   ];
