@@ -13,9 +13,7 @@ class HomePage extends StatelessWidget {
 
   final List<Widget> _pages = [
     DashboardView(),
-    // 2
     TaskManagerPage(),
-    // 3
     ProfilePage(),
   ];
 
