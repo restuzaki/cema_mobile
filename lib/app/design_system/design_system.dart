@@ -18,3 +18,4 @@ export 'widgets/status_label.dart';
 export 'widgets/expense_card.dart';
 export 'widgets/custom_navbar.dart';
 export 'widgets/custom_fab.dart';
+export 'widgets/custom_text_field.dart';

@@ -1,3 +1,5 @@
+import 'package:cema_mobile/app/modules/add_task/bindings/add_task_binding.dart';
+import 'package:cema_mobile/app/modules/add_task/views/add_task_view.dart';
 import 'package:cema_mobile/app/modules/cs_support/bindings/cs_support_binding.dart';
 import 'package:cema_mobile/app/modules/cs_support/views/cs_support_view.dart';
 import 'package:cema_mobile/app/modules/dashboard/bindings/dashboard_binding.dart';
@@ -96,6 +98,11 @@ class AppPages {
       name: _Paths.PROJECT_DETAILS,
       page: () => const ProjectDetailView(),
       binding: ProjectDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.TAMBAH_TASK,
+      page: () => const AddTaskView(),
+      binding: AddTaskBinding(),
     ),
   ];
 }

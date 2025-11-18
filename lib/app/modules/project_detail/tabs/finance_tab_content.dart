@@ -144,25 +144,44 @@ class FinanceTabContent extends StatelessWidget {
               // Expense List
               Obx(() {
                 final expenses = controller.filteredExpenses;
+                if (expenses.isEmpty) {
+                  return Padding(
+                    padding: AppSpacing.paddingMd,
+                    child: Center(
+                      child: Text(
+                        'Belum ada biaya',
+                        style: AppTypography.bodyMD.copyWith(
+                          color: AppColors.textSecondaryLight,
+                        ),
+                      ),
+                    ),
+                  );
+                }
                 return Column(
                   children: expenses.map((expense) {
-                    final isPending = expense['status'] == 'pending';
+                    final isPending = expense.status == 'pending';
                     return Padding(
                       padding: EdgeInsets.only(bottom: AppSpacing.sm),
                       child: ExpenseCard(
-                        amount: expense['amount'] ?? '',
-                        description: expense['description'] ?? '',
-                        status: expense['status'] ?? '',
+                        amount: _formatCurrency(expense.amount),
+                        description: expense.description,
+                        status: expense.status,
                         statusLabel: StatusLabel(
                           label: isPending
                               ? 'Menunggu Persetujuan'
-                              : 'Disetujui',
+                              : expense.status == 'approved'
+                              ? 'Disetujui'
+                              : 'Ditolak',
                           type: isPending
                               ? StatusLabelType.warning
-                              : StatusLabelType.success,
+                              : expense.status == 'approved'
+                              ? StatusLabelType.success
+                              : StatusLabelType.error,
                           icon: isPending
                               ? Icons.warning_amber
-                              : Icons.check_circle,
+                              : expense.status == 'approved'
+                              ? Icons.check_circle
+                              : Icons.cancel,
                         ),
                         trailing: Row(
                           children: [
@@ -191,7 +210,7 @@ class FinanceTabContent extends StatelessWidget {
                                   size: ButtonSize.small,
                                   variant: ButtonVariant.primary,
                                   onPressed: () =>
-                                      controller.acceptExpense(expense),
+                                      controller.acceptExpense(expense.id),
                                 ),
                                 SizedBox(width: AppSpacing.xs),
                                 CustomButton(
@@ -199,7 +218,7 @@ class FinanceTabContent extends StatelessWidget {
                                   size: ButtonSize.small,
                                   variant: ButtonVariant.danger,
                                   onPressed: () =>
-                                      controller.rejectExpense(expense),
+                                      controller.rejectExpense(expense.id),
                                 ),
                               ]
                             : [
@@ -234,6 +253,16 @@ class FinanceTabContent extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String _formatCurrency(double amount) {
+    final str = amount.toStringAsFixed(0);
+    final parts = <String>[];
+    for (var i = str.length; i > 0; i -= 3) {
+      final start = i - 3 < 0 ? 0 : i - 3;
+      parts.insert(0, str.substring(start, i));
+    }
+    return 'Rp ${parts.join('.')}';
   }
 }
 
