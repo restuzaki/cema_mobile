@@ -16,6 +16,8 @@ abstract class Routes {
   static const NOTIFICATION = _Paths.NOTIFICATION;
   static const TAMBAHPROYEK = _Paths.TAMBAHPROYEK;
   static const PROJECT_DETAILS = _Paths.PROJECT_DETAILS;
+  static const TAMBAH_TASK = _Paths.TAMBAH_TASK;
+  static const TAMBAH_PROYEK = _Paths.TAMBAH_PROYEK;
 }
 
 abstract class _Paths {
@@ -33,4 +35,6 @@ abstract class _Paths {
   static const NOTIFICATION = '/notification';
   static const TAMBAHPROYEK = '/tambahproyek';
   static const PROJECT_DETAILS = '/project-details';
+  static const TAMBAH_TASK = '/tambah-task';
+  static const TAMBAH_PROYEK = '/tambah-proyek';
 }

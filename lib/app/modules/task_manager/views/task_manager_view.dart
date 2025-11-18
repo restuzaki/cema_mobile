@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cema_mobile/app/design_system/design_system.dart';
-import 'package:cema_mobile/app/modules/project_detail/view/project_detail_view.dart';
 import '../controllers/task_manager_controller.dart';
 
 class TaskManagerPage extends GetView<TaskManagerController> {
@@ -107,33 +106,41 @@ class TaskManagerPage extends GetView<TaskManagerController> {
 
               const SizedBox(height: 20),
 
-              GestureDetector(
-                onTap: () => Get.to(() => const ProjectDetailView()),
-                child: _projectCard(
-                  title: "Project Name",
-                  phase: "Phase",
-                  client: "Client name",
-                  badge: "Berisiko",
-                  badgeColor: Colors.yellow.shade700,
-                  cpi: "0.91",
-                  spi: "1.1",
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              GestureDetector(
-                onTap: () => Get.to(() => const ProjectDetailView()),
-                child: _projectCard(
-                  title: "Project Name",
-                  phase: "Phase",
-                  client: "Client name",
-                  badge: "Darurat",
-                  badgeColor: Colors.red.shade700,
-                  cpi: "0.8",
-                  spi: "1.1",
-                ),
-              ),
+              // Project List from DataController
+              Obx(() {
+                final projects = controller.filteredProjects;
+                if (projects.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: Text(
+                        'Belum ada proyek',
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    ),
+                  );
+                }
+                return Column(
+                  children: projects.map((project) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: GestureDetector(
+                        onTap: () => controller.goToProjectDetail(project),
+                        child: _projectCard(
+                          title: project.name,
+                          phase: project.phase,
+                          client: project.client,
+                          badge: _getStatusBadge(project.status),
+                          badgeColor: _getStatusColor(project.status),
+                          cpi: project.cpi.toStringAsFixed(2),
+                          spi: project.spi.toStringAsFixed(2),
+                          onTap: () => controller.goToProjectDetail(project),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              }),
 
               const SizedBox(height: 60),
             ],
@@ -141,6 +148,32 @@ class TaskManagerPage extends GetView<TaskManagerController> {
         ),
       ),
     );
+  }
+
+  String _getStatusBadge(String status) {
+    switch (status) {
+      case 'berisiko':
+        return 'Berisiko';
+      case 'darurat':
+        return 'Darurat';
+      case 'normal':
+        return 'Normal';
+      default:
+        return status;
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'berisiko':
+        return Colors.yellow.shade700;
+      case 'darurat':
+        return Colors.red.shade700;
+      case 'normal':
+        return Colors.green.shade700;
+      default:
+        return Colors.grey.shade700;
+    }
   }
 
   Widget _projectCard({
@@ -151,6 +184,7 @@ class TaskManagerPage extends GetView<TaskManagerController> {
     required Color badgeColor,
     required String cpi,
     required String spi,
+    required VoidCallback onTap,
   }) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -218,7 +252,7 @@ class TaskManagerPage extends GetView<TaskManagerController> {
                 ],
               ),
               GestureDetector(
-                onTap: () => Get.to(() => const ProjectDetailView()),
+                onTap: onTap,
                 child: Row(
                   children: const [
                     Text(

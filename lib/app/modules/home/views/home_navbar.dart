@@ -55,13 +55,7 @@ class HomePage extends GetView<HomeController> {
               icon: Icons.attach_money,
               onTap: () {
                 controller.toggleFab();
-                // Navigate to finance page
-                Get.snackbar(
-                  'Info',
-                  'Keuangan clicked',
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 1),
-                );
+                Get.toNamed('/tambah-proyek');
               },
             ),
             SizedBox(height: AppSpacing.sm),
@@ -69,13 +63,8 @@ class HomePage extends GetView<HomeController> {
               icon: Icons.assignment_outlined,
               onTap: () {
                 controller.toggleFab();
-                // Navigate to task page
-                Get.snackbar(
-                  'Info',
-                  'Tugas clicked',
-                  snackPosition: SnackPosition.BOTTOM,
-                  duration: const Duration(seconds: 1),
-                );
+                // Navigate to add task page
+                Get.toNamed('/tambah-task');
               },
             ),
             SizedBox(height: AppSpacing.md),
