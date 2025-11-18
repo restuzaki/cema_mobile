@@ -1,10 +1,14 @@
 import 'package:get/get.dart';
-import 'package:cema_mobile/app/routes/app_pages.dart';
-
 
 class TaskManagerController extends GetxController {
+  var selectedTabIndex = 0.obs;
 
- void goToDetail(Map<String, dynamic> proggress) {
-    Get.toNamed(Routes.TASKMANAGER);
+  void changeTab(int index) {
+    selectedTabIndex.value = index;
+  }
+
+  void goToProjectDetail() {
+    // Navigate to project detail
+    Get.toNamed('/project-detail');
   }
 }
