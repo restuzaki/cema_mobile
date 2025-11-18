@@ -2,7 +2,7 @@
 import 'package:cema_mobile/app/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../controller/project_detail_controller.dart';
+import '../controller/project_detail_controller.dart';
 
 class FinanceTabContent extends StatelessWidget {
   final ProjectDetailController controller;

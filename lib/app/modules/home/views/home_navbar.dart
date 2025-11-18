@@ -3,18 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
 import 'package:cema_mobile/app/modules/profile/views/profile_view.dart';
-import '../../../widgets/custom_navbar.dart';
+import 'package:cema_mobile/app/design_system/design_system.dart';
 import '../controllers/home_controller.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends GetView<HomeController> {
   HomePage({super.key});
 
-  final HomeController controller = Get.put(HomeController());
-
-  final List<Widget> _pages = [
+  static final List<Widget> _pages = [
     DashboardView(),
     TaskManagerPage(),
     ProfilePage(),
+  ];
+
+  static const List<CustomNavbarItem> _navItems = [
+    CustomNavbarItem(label: 'Dashboard', icon: Icons.home),
+    CustomNavbarItem(label: 'Project', icon: Icons.view_agenda_outlined),
+    CustomNavbarItem(label: 'Profile', icon: Icons.person),
   ];
 
   @override
@@ -26,37 +30,76 @@ class HomePage extends StatelessWidget {
           children: _pages,
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 41, 37, 37),
-          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
-        ),
-        child: Obx(
-          () => Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              CustomNavButton(
-                icon: Icons.home,
-                label: "Dashboard",
-                isSelected: controller.selectedIndex.value == 0,
-                onTap: () => controller.changeTabIndex(0),
-              ),
-              CustomNavButton(
-                icon: Icons.stacked_bar_chart,
-                label: "Project",
-                isSelected: controller.selectedIndex.value == 1,
-                onTap: () => controller.changeTabIndex(1),
-              ),
-              CustomNavButton(
-                icon: Icons.person,
-                label: "Profile",
-                isSelected: controller.selectedIndex.value == 2,
-                onTap: () => controller.changeTabIndex(2),
-              ),
-            ],
-          ),
+      floatingActionButton: _buildFabMenu(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      bottomNavigationBar: Obx(
+        () => CustomNavbar(
+          currentIndex: controller.selectedIndex.value,
+          onTap: controller.changeTabIndex,
+          items: _navItems,
         ),
       ),
+    );
+  }
+
+  Widget _buildFabMenu() {
+    return Obx(() {
+      final isExpanded = controller.isFabExpanded.value;
+
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (isExpanded) ...[
+            _buildFabOption(
+              icon: Icons.attach_money,
+              onTap: () {
+                controller.toggleFab();
+                // Navigate to finance page
+                Get.snackbar(
+                  'Info',
+                  'Keuangan clicked',
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 1),
+                );
+              },
+            ),
+            SizedBox(height: AppSpacing.sm),
+            _buildFabOption(
+              icon: Icons.assignment_outlined,
+              onTap: () {
+                controller.toggleFab();
+                // Navigate to task page
+                Get.snackbar(
+                  'Info',
+                  'Tugas clicked',
+                  snackPosition: SnackPosition.BOTTOM,
+                  duration: const Duration(seconds: 1),
+                );
+              },
+            ),
+            SizedBox(height: AppSpacing.md),
+          ],
+          CustomFab(
+            icon: isExpanded ? Icons.close : Icons.add,
+            onPressed: controller.toggleFab,
+            variant: FabVariant.primary,
+            size: FabSize.large,
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget _buildFabOption({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return CustomFab(
+      icon: icon,
+      onPressed: onTap,
+      variant: FabVariant.secondary,
+      size: FabSize.large,
     );
   }
 }

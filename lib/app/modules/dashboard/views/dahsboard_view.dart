@@ -40,7 +40,6 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ),
         ),
-        _buildFabMenu(greenColor),
       ],
     );
   }
@@ -632,97 +631,6 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildMiniFab({
-    required IconData icon,
-    required Color color,
-    required VoidCallback onPressed,
-  }) {
-    return InkWell(
-      onTap: onPressed,
-      customBorder: const CircleBorder(),
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          border: Border.all(color: color, width: 2.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Icon(icon, color: color, size: 30),
-      ),
-    );
-  }
-
-  Widget _buildFabMenu(Color greenColor) {
-    return Positioned(
-      bottom: 20.0,
-      right: 20.0,
-      child: Obx(
-        () => Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            AnimatedSlide(
-              offset: controller.isFabMenuOpen.value
-                  ? Offset.zero
-                  : const Offset(0, 0.5),
-              duration: const Duration(milliseconds: 200),
-              child: AnimatedOpacity(
-                opacity: controller.isFabMenuOpen.value ? 1.0 : 0.0,
-                duration: const Duration(milliseconds: 200),
-                child: IgnorePointer(
-                  ignoring: !controller.isFabMenuOpen.value,
-                  child: Column(
-                    children: [
-                      _buildMiniFab(
-                        icon: Icons.monetization_on_outlined,
-                        color: greenColor,
-                        onPressed: () {
-                          controller.toggleFabMenu();
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      _buildMiniFab(
-                        icon: Icons.library_books,
-                        color: greenColor,
-                        onPressed: () {
-                          controller.toggleFabMenu();
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            FloatingActionButton(
-              onPressed: controller.toggleFabMenu,
-              backgroundColor: greenColor,
-              foregroundColor: Colors.white,
-              elevation: 2,
-              shape: const CircleBorder(),
-              child: AnimatedRotation(
-                turns: controller.isFabMenuOpen.value ? 0 : 500,
-                duration: const Duration(milliseconds: 250),
-                child: Icon(
-                  controller.isFabMenuOpen.value ? Icons.close : Icons.add,
-                  size: 32,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

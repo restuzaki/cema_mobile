@@ -2,8 +2,8 @@ import 'package:cema_mobile/app/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/project_detail_controller.dart';
-import '../views/widgets/task_tab_content.dart';
-import '../views/widgets/finance_tab_content.dart';
+import '../tabs/task_tab_content.dart';
+import '../tabs/finance_tab_content.dart';
 
 class ProjectDetailView extends StatelessWidget {
   const ProjectDetailView({super.key});

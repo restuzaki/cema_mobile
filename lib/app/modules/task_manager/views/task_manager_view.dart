@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:cema_mobile/app/design_system/design_system.dart';
+import 'package:cema_mobile/app/modules/project_detail/view/project_detail_view.dart';
+import '../controllers/task_manager_controller.dart';
 
-class TaskManagerPage extends StatelessWidget {
+class TaskManagerPage extends GetView<TaskManagerController> {
   const TaskManagerPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        onPressed: () {},
-        child: const Icon(Icons.add, size: 32, color: Colors.white),
-      ),
+      backgroundColor: AppColors.neutral100,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -87,64 +86,59 @@ class TaskManagerPage extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              Row(
-                children: [
-                  _tabItem("All", isActive: true),
-                  const SizedBox(width: 20),
-                  _tabItem("Berlangsung"),
-                  const SizedBox(width: 20),
-                  _tabItem("Selesai"),
-                ],
-              ),
-
-              const SizedBox(height: 10),
-
-              Container(
-                height: 3,
-                width: 24,
-                color: Colors.black,
-                margin: const EdgeInsets.only(left: 0, top: 2),
+              Obx(
+                () => SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(3, (i) {
+                      final labels = ['All', 'Berlangsung', 'Selesai'];
+                      return Padding(
+                        padding: EdgeInsets.only(right: AppSpacing.md),
+                        child: CustomFilter(
+                          label: labels[i],
+                          isActive: controller.selectedTabIndex.value == i,
+                          onTap: () => controller.changeTab(i),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 20),
 
-              _projectCard(
-                title: "Project Name",
-                phase: "Phase",
-                client: "Client name",
-                badge: "Berisiko",
-                badgeColor: Colors.yellow.shade700,
-                cpi: "0.91",
-                spi: "1.1",
+              GestureDetector(
+                onTap: () => Get.to(() => const ProjectDetailView()),
+                child: _projectCard(
+                  title: "Project Name",
+                  phase: "Phase",
+                  client: "Client name",
+                  badge: "Berisiko",
+                  badgeColor: Colors.yellow.shade700,
+                  cpi: "0.91",
+                  spi: "1.1",
+                ),
               ),
 
               const SizedBox(height: 14),
 
-              _projectCard(
-                title: "Project Name",
-                phase: "Phase",
-                client: "Client name",
-                badge: "Darurat",
-                badgeColor: Colors.red.shade700,
-                cpi: "0.8",
-                spi: "1.1",
+              GestureDetector(
+                onTap: () => Get.to(() => const ProjectDetailView()),
+                child: _projectCard(
+                  title: "Project Name",
+                  phase: "Phase",
+                  client: "Client name",
+                  badge: "Darurat",
+                  badgeColor: Colors.red.shade700,
+                  cpi: "0.8",
+                  spi: "1.1",
+                ),
               ),
 
               const SizedBox(height: 60),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _tabItem(String label, {bool isActive = false}) {
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 16,
-        fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-        color: isActive ? Colors.black : Colors.grey,
       ),
     );
   }
@@ -223,18 +217,21 @@ class TaskManagerPage extends StatelessWidget {
                   _scoreBox("SPI", spi, Colors.green.shade100),
                 ],
               ),
-              Row(
-                children: const [
-                  Text(
-                    "Lihat Detail",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => Get.to(() => const ProjectDetailView()),
+                child: Row(
+                  children: const [
+                    Text(
+                      "Lihat Detail",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 6),
-                  Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                ],
+                    SizedBox(width: 6),
+                    Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                  ],
+                ),
               ),
             ],
           ),
