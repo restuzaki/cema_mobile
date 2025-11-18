@@ -104,5 +104,10 @@ class AppPages {
       page: () => const AddTaskView(),
       binding: AddTaskBinding(),
     ),
+    GetPage(
+      name: _Paths.TAMBAH_PROYEK,
+      page: () => TambahProyekPage(),
+      binding: TambahProyekBinding(),
+    ),
   ];
 }

@@ -51,20 +51,14 @@ class HomePage extends GetView<HomeController> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (isExpanded) ...[
-            // _buildFabOption(
-            //   icon: Icons.attach_money,
-            //   onTap: () {
-            //     controller.toggleFab();
-            //     // Navigate to finance page
-            //     Get.snackbar(
-            //       'Info',
-            //       'Keuangan clicked',
-            //       snackPosition: SnackPosition.BOTTOM,
-            //       duration: const Duration(seconds: 1),
-            //     );
-            //   },
-            // ),
-            // SizedBox(height: AppSpacing.sm),
+            _buildFabOption(
+              icon: Icons.attach_money,
+              onTap: () {
+                controller.toggleFab();
+                Get.toNamed('/tambah-proyek');
+              },
+            ),
+            SizedBox(height: AppSpacing.sm),
             _buildFabOption(
               icon: Icons.assignment_outlined,
               onTap: () {
