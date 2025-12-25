@@ -33,22 +33,21 @@ class LoginController extends GetxController {
         throw "No response from server";
       final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && data['status'] == 'success') {
         box.write('token', data['token']);
         box.write('role', data['role']);
         box.write('userId', data['id']);
 
         _showSnackbar("Success", "Welcome back!");
-
         await Future.delayed(const Duration(milliseconds: 1000));
-
         FocusManager.instance.primaryFocus?.unfocus();
-
         Get.offAllNamed("/home");
       } else {
         _showSnackbar(
           "Login Failed",
-          data['message'] ?? "Invalid credentials",
+          data['message'] ??
+              data['error'] ??
+              "Akun tidak ditemukan atau password salah",
           isError: true,
         );
       }
@@ -62,6 +61,7 @@ class LoginController extends GetxController {
   Future<void> loginWithGoogle() async {
     try {
       isLoading.value = true;
+
       await _googleSignIn.signOut();
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -78,23 +78,26 @@ class LoginController extends GetxController {
         final response = await _authService.googleLogin(idToken);
         final data = jsonDecode(response.body);
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.statusCode == 200 && data['status'] == 'success') {
           box.write('token', data['token']);
           box.write('role', data['role']);
-          _showSnackbar("Success", "Login Google Berhasil!");
+          box.write('userId', data['id']);
 
+          _showSnackbar("Success", "Login Google Berhasil!");
           await Future.delayed(const Duration(milliseconds: 1000));
           Get.offAllNamed("/home");
         } else {
           _showSnackbar(
-            "Error",
-            data['message'] ?? "Google Login failed",
+            "Akses Ditolak",
+            data['message'] ??
+                data['error'] ??
+                "Akun Google Anda tidak terdaftar di database.",
             isError: true,
           );
         }
       }
     } catch (error) {
-      _showSnackbar("Error", "Google login failed", isError: true);
+      _showSnackbar("Error", "Google login failed: $error", isError: true);
     } finally {
       isLoading.value = false;
     }

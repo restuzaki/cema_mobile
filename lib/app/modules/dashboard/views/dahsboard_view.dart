@@ -54,22 +54,24 @@ class DashboardView extends GetView<DashboardController> {
       elevation: 0,
       title: Row(
         children: [
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Asep Toktok",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
+          Obx(
+            () => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  controller.userName.value,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
                 ),
-              ),
-              Text(
-                "Project Manager",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-            ],
+                Text(
+                  controller.userRole.value,
+                  style: const TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -90,11 +92,22 @@ class DashboardView extends GetView<DashboardController> {
             ),
           ),
         ),
-        const SizedBox(width: 16),
-        const CircleAvatar(
-          radius: 34,
-          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=56'),
-        ),
+        const SizedBox(width: 10),
+
+        Obx(() {
+          String imageUrl = controller.profilePic.value;
+
+          return CircleAvatar(
+            radius: 25,
+            backgroundColor: Colors.grey[200],
+            backgroundImage: imageUrl.isNotEmpty
+                ? NetworkImage(imageUrl)
+                : null,
+            child: imageUrl.isEmpty
+                ? const Icon(Icons.person, size: 35, color: Colors.grey)
+                : null,
+          );
+        }),
         const SizedBox(width: 5),
       ],
     );
