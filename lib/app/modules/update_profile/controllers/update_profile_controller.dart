@@ -26,11 +26,28 @@ class UpdateProfileController extends GetxController {
     emailController.addListener(_validateForm);
   }
 
-  void _loadUserData() {
-    namaController.text = box.read('name') ?? '';
-    numberController.text = box.read('phoneNumber') ?? '';
-    emailController.text = box.read('email') ?? '';
-    _validateForm();
+  void _loadUserData() async {
+    // Priority: Fetch from API to ensure fresh data
+    try {
+      String? userId = box.read('userId');
+      String? token = box.read('token');
+
+      if (userId != null && token != null) {
+        isLoading.value = true;
+        final response = await _authService.getUserProfile(userId, token);
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body)['data'];
+          namaController.text = data['name'] ?? '';
+          numberController.text = data['phoneNumber'] ?? '';
+          emailController.text = data['email'] ?? '';
+          _validateForm();
+        }
+      }
+    } catch (e) {
+      print("Error loading user data: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void _validateForm() {
@@ -56,21 +73,27 @@ class UpdateProfileController extends GetxController {
         "email": emailController.text.trim(),
       };
 
+      print("Sending update data: $updateData");
       final response = await _authService.updateUser(userId, token, updateData);
+      print("Update response code: ${response.statusCode}");
+      print("Update response body: ${response.body}");
 
       if (response.statusCode == 200) {
-        box.write('name', namaController.text.trim());
-        box.write('phoneNumber', numberController.text.trim());
-        box.write('email', emailController.text.trim());
+        // Removed box.write as requested - rely on API/Memory state
 
         if (Get.isRegistered<ProfileController>()) {
           final profileCtrl = Get.find<ProfileController>();
-          profileCtrl.fetchProfile();
+          // Optimistic update: Update UI immediately with the data we just sent
+          profileCtrl.name.value = namaController.text.trim();
+          profileCtrl.email.value = emailController.text.trim();
+          // Removed fetchProfile to avoid race condition with stale data
         }
 
         if (Get.isRegistered<DashboardController>()) {
-           final dashboardCtrl = Get.find<DashboardController>();
-           dashboardCtrl.fetchUserProfile();
+          final dashboardCtrl = Get.find<DashboardController>();
+          // Optimistic update: Update UI immediately
+          dashboardCtrl.userName.value = namaController.text.trim();
+          // Removed fetchUserProfile to avoid race condition with stale data
         }
 
         _showSnackbar('Berhasil', 'Data pribadi berhasil diperbarui');

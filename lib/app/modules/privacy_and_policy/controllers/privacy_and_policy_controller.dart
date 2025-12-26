@@ -1,60 +1,131 @@
 import 'package:cema_mobile/app/data/model/policy.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:share_plus/share_plus.dart';
 
 import 'package:get/get.dart';
 
 class PrivacyController extends GetxController {
-  final sections = <PolicySection>[
-    PolicySection(
-      title: 'Pendahuluan',
-      body:
-          'Selamat datang di aplikasi kami. Privasi dan keamanan data Anda adalah prioritas utama. Dokumen ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi Anda. Kami berkomitmen membuat kebijakan yang jelas, mudah dibaca, dan ramah pengguna.',
-    ),
-    PolicySection(
-      title: 'Data yang Dikumpulkan',
-      body:
-          'Kami dapat mengumpulkan beberapa jenis informasi, termasuk: \n• Data identitas (nama, email) jika Anda mendaftar atau menghubungi kami.\n• Data teknis (jenis perangkat, versi sistem operasi, ID perangkat).\n• Data penggunaan (halaman yang dikunjungi, fitur yang dipakai, waktu interaksi).',
-    ),
-    PolicySection(
-      title: 'Tujuan Penggunaan Data',
-      body:
-          'Data digunakan untuk: \n• Menyediakan dan memperbaiki layanan.\n• Personalisasi pengalaman pengguna (rekomendasi, preferensi).\n• Komunikasi penting terkait akun atau update fitur.\n• Analitik untuk memahami bagaimana aplikasi digunakan dan memperbaiki performa.',
-    ),
-    PolicySection(
-      title: 'Pembagian dan Pengungkapan',
-      body:
-          'Kami tidak akan menjual data pribadi Anda. Data hanya dapat dibagikan dengan pihak ketiga dalam kondisi berikut: \n• Penyedia layanan yang membantu operasional (mis. hosting, analitik).\n• Jika diwajibkan secara hukum atau untuk melindungi hak dan keselamatan kami dan pengguna lain.\nSemua mitra dijaga agar mematuhi standar privasi yang memadai.',
-    ),
-    PolicySection(
-      title: 'Cookies & Teknologi Serupa',
-      body:
-          'Aplikasi dapat menggunakan cookie ringan atau penyimpanan lokal untuk menyimpan preferensi dan meningkatkan pengalaman pengguna. Anda dapat menghapus atau menonaktifkan cookie melalui pengaturan perangkat, namun beberapa fitur mungkin tidak berfungsi optimal.',
-    ),
-    PolicySection(
-      title: 'Keamanan Data',
-      body:
-          'Kami menerapkan langkah-langkah teknis dan organisasi untuk melindungi data dari akses tidak sah, perubahan, atau penghapusan. Namun, tidak ada metode transmisi data melalui internet yang 100% aman; kami terus memperbarui praktik keamanan sesuai standar industri.',
-    ),
-    PolicySection(
-      title: 'Hak Pengguna',
-      body:
-          'Anda berhak untuk meminta akses, koreksi, atau penghapusan data pribadi Anda. Jika ingin mengajukan permintaan tersebut, silakan hubungi tim kami melalui kontak yang tersedia di bawah.',
-    ),
-    PolicySection(
-      title: 'Privasi Anak-anak',
-      body:
-          'Aplikasi ini tidak ditujukan untuk anak-anak di bawah 13 tahun. Kami tidak sengaja mengumpulkan data dari anak-anak. Jika terlanjur terjadi, mohon hubungi kami untuk penghapusan data.',
-    ),
-    PolicySection(
-      title: 'Perubahan Kebijakan',
-      body:
-          'Kami dapat memperbarui kebijakan ini sewaktu-waktu. Perubahan signifikan akan diinformasikan melalui notifikasi in-app atau email. Tanggal pembaruan terakhir akan dicantumkan di bagian bawah halaman.',
-    ),
-    PolicySection(
-      title: 'Kontak',
-      body:
-          'Jika Anda memiliki pertanyaan, keluhan, atau permintaan terkait privasi, hubungi: \nEmail: privacy@contohapp.id\nAlamat: Jl. Contoh No.1, Bandung, Indonesia',
-    ),
-  ].obs;
+  var isLoading = false.obs;
 
-  final lastUpdated = '08 November 2025'.obs;
+  final sections = <PolicySection>[].obs;
+  final lastUpdated = '08 Desember 2025'.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchPrivacyData();
+  }
+
+  void fetchPrivacyData() async {
+    isLoading.value = true;
+    try {
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      sections.assignAll([
+        PolicySection(
+          title: 'Pendahuluan',
+          body:
+              'Selamat datang di aplikasi kami. Privasi dan keamanan data Anda adalah prioritas utama...',
+        ),
+        PolicySection(
+          title: 'Data yang Dikumpulkan',
+          body:
+              'Kami dapat mengumpulkan beberapa jenis informasi, termasuk: \n• Data identitas \n• Data teknis \n• Data penggunaan.',
+        ),
+        PolicySection(
+          title: 'Tujuan Penggunaan Data',
+          body:
+              'Data digunakan untuk menyediakan dan memperbaiki layanan serta personalisasi pengalaman pengguna.',
+        ),
+        PolicySection(
+          title: 'Keamanan Data',
+          body:
+              'Kami menerapkan langkah-langkah teknis tinggi untuk melindungi data dari akses tidak sah.',
+        ),
+        PolicySection(
+          title: 'Kontak',
+          body:
+              'Email: privacy@cema.id\nAlamat: Jl. Cema Design No.1, Bandung.',
+        ),
+      ]);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> shareAsPdf() async {
+    try {
+      isLoading.value = true;
+
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          build: (pw.Context context) {
+            return [
+              pw.Header(
+                level: 0,
+                child: pw.Text(
+                  "Privacy & Policy - Cema Mobile",
+                  style: pw.TextStyle(
+                    fontSize: 24,
+                    fontWeight: pw.FontWeight.bold,
+                  ),
+                ),
+              ),
+              pw.Paragraph(text: "Terakhir diperbarui: ${lastUpdated.value}"),
+              pw.SizedBox(height: 20),
+
+              ...sections.map(
+                (section) => pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text(
+                      section.title,
+                      style: pw.TextStyle(
+                        fontSize: 16,
+                        fontWeight: pw.FontWeight.bold,
+                      ),
+                    ),
+                    pw.SizedBox(height: 5),
+                    pw.Text(section.body),
+                    pw.SizedBox(height: 15),
+                  ],
+                ),
+              ),
+            ];
+          },
+        ),
+      );
+
+      final output = await getTemporaryDirectory();
+      final file = File("${output.path}/Privacy_Policy_Cema.pdf");
+      await file.writeAsBytes(await pdf.save());
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Halo, berikut adalah dokumen Privacy & Policy dari Cema Mobile.',
+      );
+    } catch (e) {
+      Get.snackbar("Error", "Gagal membagikan file: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void acceptPrivacyPolicy() {
+    Get.back();
+    Get.snackbar(
+      "Berhasil",
+      "Anda telah menyetujui kebijakan privasi terbaru.",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF8DC63F),
+      colorText: Colors.white,
+    );
+  }
 }
