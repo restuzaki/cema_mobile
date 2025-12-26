@@ -11,6 +11,7 @@ class DashboardController extends GetxController {
   var userName = "Loading...".obs;
   var userRole = "Guest".obs;
   var profilePic = "".obs;
+  var isLoading = false.obs;
 
   @override
   void onInit() {
@@ -24,6 +25,7 @@ class DashboardController extends GetxController {
       String? token = box.read('token');
 
       if (userId != null && token != null) {
+        isLoading.value = true;
         final response = await _authService.getUserProfile(userId, token);
 
         if (response.statusCode == 200) {
@@ -44,6 +46,8 @@ class DashboardController extends GetxController {
       }
     } catch (e) {
       print("Error fetching profile: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
