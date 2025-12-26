@@ -19,6 +19,7 @@ class RegisterController extends GetxController {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
+    // Validasi dasar
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       _showSnackbar("Error", "Please fill all fields", isError: true);
       return;
@@ -26,13 +27,15 @@ class RegisterController extends GetxController {
 
     try {
       isLoading.value = true;
-
       FocusManager.instance.primaryFocus?.unfocus();
 
-      final response = await _authService.register(name, email, password);
+      final response = await _authService.register(name, "", email, password);
+
+      if (response.body == null || response.body.isEmpty)
+        throw "No response from server";
       final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 201 || response.statusCode == 200) {
         _showSnackbar("Success", "Account created successfully!");
 
         await Future.delayed(const Duration(seconds: 1));
@@ -40,13 +43,13 @@ class RegisterController extends GetxController {
         Get.offAllNamed("/login");
       } else {
         _showSnackbar(
-          "Failed",
-          data['message'] ?? "Registration failed",
+          "Registration Failed",
+          data['message'] ?? "Check your data and try again",
           isError: true,
         );
       }
     } catch (e) {
-      _showSnackbar("Error", "Check your connection", isError: true);
+      _showSnackbar("Error", "Connection failed: $e", isError: true);
     } finally {
       isLoading.value = false;
     }

@@ -1,5 +1,4 @@
 import 'package:cema_mobile/app/modules/update_profile/controllers/update_profile_controller.dart';
-
 import 'package:cema_mobile/app/widgets/custom_leading_back_action.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,8 +16,12 @@ class UpdateProfilePage extends GetView<UpdateProfileController> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        elevation: 0,
         leading: const CustomLeadingBackActionButton(),
-        title: const Text('Perbarui Data Pribadi'),
+        title: const Text(
+          'Perbarui Data Pribadi',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -34,6 +37,8 @@ class UpdateProfilePage extends GetView<UpdateProfileController> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // Field Nama
             CustomFormField(
               controller: controller.namaController,
               typeController: TextInputType.name,
@@ -41,7 +46,10 @@ class UpdateProfilePage extends GetView<UpdateProfileController> {
               hintText: 'Silahkan isi dengan nama anda!',
               labelText: 'Nama',
             ),
+
             const SizedBox(height: 10),
+
+            // Field Nomor HP
             CustomFormField(
               controller: controller.numberController,
               typeController: TextInputType.phone,
@@ -49,7 +57,10 @@ class UpdateProfilePage extends GetView<UpdateProfileController> {
               hintText: 'Silahkan isi dengan nomor hp anda!',
               labelText: 'Nomor hp',
             ),
+
             const SizedBox(height: 10),
+
+            // Field Email
             CustomFormField(
               controller: controller.emailController,
               typeController: TextInputType.emailAddress,
@@ -57,15 +68,19 @@ class UpdateProfilePage extends GetView<UpdateProfileController> {
               hintText: 'Silahkan isi dengan email anda!',
               labelText: 'Email',
             ),
-            const SizedBox(height: 10),
-            const SizedBox(height: 15),
+
+            const SizedBox(height: 30),
+
             Obx(
               () => CustomButton(
-                onTap: controller.isFormValid.value
-                    ? controller.register
+                onTap:
+                    (controller.isFormValid.value &&
+                        !controller.isLoading.value)
+                    ? () => controller.updateProfile()
                     : null,
-                isEnabled: controller.isFormValid.value,
-                text: 'Perbarui',
+                isEnabled:
+                    controller.isFormValid.value && !controller.isLoading.value,
+                text: controller.isLoading.value ? 'Memproses...' : 'Perbarui',
               ),
             ),
           ],

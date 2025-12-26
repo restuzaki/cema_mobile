@@ -1,13 +1,61 @@
+import 'dart:convert';
 import 'package:get/get.dart';
-
+import 'package:get_storage/get_storage.dart';
 import '../../../data/model/risk.dart';
+import '../../../service/auth_service.dart';
 
 class DashboardController extends GetxController {
+  final AuthService _authService = AuthService();
+  final box = GetStorage();
+
+  var userName = "Loading...".obs;
+  var userRole = "Guest".obs;
+  var profilePic = "".obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchUserProfile();
+  }
+
+  void fetchUserProfile() async {
+    try {
+      String? userId = box.read('userId');
+      String? token = box.read('token');
+
+      if (userId != null && token != null) {
+        final response = await _authService.getUserProfile(userId, token);
+
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+          final userData = responseData['data'];
+
+          userName.value = userData['name'] ?? "No Name";
+
+          String rawRole = userData['role'] ?? "client";
+          userRole.value = rawRole
+              .replaceAll('_', ' ')
+              .split(' ')
+              .map((str) => str.capitalize)
+              .join(' ');
+
+          profilePic.value = userData['profilePicture'] ?? "";
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile: $e");
+    }
+  }
+
   final RxInt selectedRiskTabIndex = 0.obs;
   final RxBool isFabMenuOpen = false.obs;
 
   void changeRiskTab(int index) {
     selectedRiskTabIndex.value = index;
+  }
+
+  void toggleFabMenu() {
+    isFabMenuOpen.toggle();
   }
 
   void acceptTask(String taskId) {
@@ -16,14 +64,6 @@ class DashboardController extends GetxController {
 
   void rejectTask(String taskId) {
     Get.snackbar("Info", "Tugas $taskId ditolak");
-  }
-
-  void acceptProject(String projectId) {
-    Get.snackbar("Sukses", "Proyek $projectId diterima");
-  }
-
-  void rejectProject(String projectId) {
-    Get.snackbar("Info", "Proyek $projectId ditolak");
   }
 
   final RxList<Project> allProjects = <Project>[
@@ -73,19 +113,15 @@ class DashboardController extends GetxController {
     switch (selectedRiskTabIndex.value) {
       case 1:
         return allProjects
-            .where((project) => project.riskType == RiskType.darurat)
+            .where((p) => p.riskType == RiskType.darurat)
             .toList();
       case 2:
         return allProjects
-            .where((project) => project.riskType == RiskType.berisiko)
+            .where((p) => p.riskType == RiskType.berisiko)
             .toList();
       case 0:
       default:
         return allProjects;
     }
-  }
-
-  void toggleFabMenu() {
-    isFabMenuOpen.toggle();
   }
 }
