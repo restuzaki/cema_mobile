@@ -1,123 +1,187 @@
-class ProjectModel {
-  final String id;
-  final String name;
-  final String phase;
-  final String client;
-  final String status; // 'berisiko', 'darurat', 'normal'
-  final double cpi;
-  final double spi;
+class Project {
+  String? sId;
+  String? id;
+  String? name;
+  String? description;
+  String? status;
+  Location? location;
+  Financials? financials;
+  List<String>? teamMembers;
+  num? progress;
+  String? clientName;
+  String? managerName;
+  String? serviceName;
+  String? adminId;
+  String? clientId;
+  String? managerId;
+  DateTime? startDate;
+  DateTime? endDate;
+  DateTime? createdAt;
+  DateTime? updatedAt;
 
-  ProjectModel({
-    required this.id,
-    required this.name,
-    required this.phase,
-    required this.client,
-    required this.status,
-    required this.cpi,
-    required this.spi,
+  Project({
+    this.sId,
+    this.id,
+    this.name,
+    this.description,
+    this.status,
+    this.location,
+    this.financials,
+    this.teamMembers,
+    this.progress,
+    this.clientName,
+    this.managerName,
+    this.serviceName,
+    this.adminId,
+    this.clientId,
+    this.managerId,
+    this.startDate,
+    this.endDate,
+    this.createdAt,
+    this.updatedAt,
   });
 
-  ProjectModel copyWith({
-    String? id,
-    String? name,
-    String? phase,
-    String? client,
-    String? status,
-    double? cpi,
-    double? spi,
-  }) {
-    return ProjectModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      phase: phase ?? this.phase,
-      client: client ?? this.client,
-      status: status ?? this.status,
-      cpi: cpi ?? this.cpi,
-      spi: spi ?? this.spi,
-    );
+  Project.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    id = json['id'];
+    name = json['name'];
+    description = json['description'];
+    status = json['status'];
+    location = json['location'] != null
+        ? Location.fromJson(json['location'])
+        : null;
+    financials = json['financials'] != null
+        ? Financials.fromJson(json['financials'])
+        : null;
+    if (json['team_members'] != null) {
+      teamMembers = List<String>.from(json['team_members']);
+    }
+    progress = json['progress'];
+    clientName = json['clientName'];
+    managerName = json['managerName'];
+    serviceName = json['serviceName'];
+    adminId = json['admin_id'];
+    clientId = json['client_id'];
+    managerId = json['manager_id'];
+    startDate = json['startDate'] != null
+        ? DateTime.tryParse(json['startDate'])
+        : null;
+    endDate = json['endDate'] != null
+        ? DateTime.tryParse(json['endDate'])
+        : null;
+    createdAt = json['createdAt'] != null
+        ? DateTime.tryParse(json['createdAt'])
+        : null;
+    updatedAt = json['updatedAt'] != null
+        ? DateTime.tryParse(json['updatedAt'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['id'] = id;
+    data['name'] = name;
+    data['description'] = description;
+    data['status'] = status;
+    if (location != null) {
+      data['location'] = location!.toJson();
+    }
+    if (financials != null) {
+      data['financials'] = financials!.toJson();
+    }
+    data['team_members'] = teamMembers;
+    data['progress'] = progress;
+    data['clientName'] = clientName;
+    data['managerName'] = managerName;
+    data['serviceName'] = serviceName;
+    data['admin_id'] = adminId;
+    data['client_id'] = clientId;
+    data['manager_id'] = managerId;
+    data['startDate'] = startDate?.toIso8601String();
+    data['endDate'] = endDate?.toIso8601String();
+    data['createdAt'] = createdAt?.toIso8601String();
+    data['updatedAt'] = updatedAt?.toIso8601String();
+    return data;
   }
 }
 
-class TaskModel {
-  final String id;
-  final String projectId;
-  final String title;
-  final String responsibleName;
-  final String description;
-  final DateTime startDate;
-  final DateTime dueDate;
-  final String phase;
-  final String status; // 'ongoing', 'late', 'done', 'menunggu'
+class Location {
+  String? address;
+  Coordinates? coordinates;
 
-  TaskModel({
-    required this.id,
-    required this.projectId,
-    required this.title,
-    required this.responsibleName,
-    required this.description,
-    required this.startDate,
-    required this.dueDate,
-    required this.phase,
-    required this.status,
-  });
+  Location({this.address, this.coordinates});
 
-  TaskModel copyWith({
-    String? id,
-    String? projectId,
-    String? title,
-    String? responsibleName,
-    String? description,
-    DateTime? startDate,
-    DateTime? dueDate,
-    String? phase,
-    String? status,
-  }) {
-    return TaskModel(
-      id: id ?? this.id,
-      projectId: projectId ?? this.projectId,
-      title: title ?? this.title,
-      responsibleName: responsibleName ?? this.responsibleName,
-      description: description ?? this.description,
-      startDate: startDate ?? this.startDate,
-      dueDate: dueDate ?? this.dueDate,
-      phase: phase ?? this.phase,
-      status: status ?? this.status,
-    );
+  Location.fromJson(Map<String, dynamic> json) {
+    address = json['address'];
+    coordinates = json['coordinates'] != null
+        ? Coordinates.fromJson(json['coordinates'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['address'] = address;
+    if (coordinates != null) {
+      data['coordinates'] = coordinates!.toJson();
+    }
+    return data;
   }
 }
 
-class ExpenseModel {
-  final String id;
-  final String projectId;
-  final double amount;
-  final String description;
-  final String status; // 'pending', 'approved', 'rejected'
-  final DateTime createdAt;
+class Coordinates {
+  num? lat;
+  num? lng;
 
-  ExpenseModel({
-    required this.id,
-    required this.projectId,
-    required this.amount,
-    required this.description,
-    required this.status,
-    required this.createdAt,
+  Coordinates({this.lat, this.lng});
+
+  Coordinates.fromJson(Map<String, dynamic> json) {
+    lat = json['lat'];
+    lng = json['lng'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['lat'] = lat;
+    data['lng'] = lng;
+    return data;
+  }
+}
+
+class Financials {
+  num? budgetTotal;
+  num? costActual;
+  num? valuePlanned;
+  num? valueEarned;
+  num? cpi;
+  num? spi;
+
+  Financials({
+    this.budgetTotal,
+    this.costActual,
+    this.valuePlanned,
+    this.valueEarned,
+    this.cpi,
+    this.spi,
   });
 
-  ExpenseModel copyWith({
-    String? id,
-    String? projectId,
-    double? amount,
-    String? description,
-    String? status,
-    DateTime? createdAt,
-  }) {
-    return ExpenseModel(
-      id: id ?? this.id,
-      projectId: projectId ?? this.projectId,
-      amount: amount ?? this.amount,
-      description: description ?? this.description,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
-    );
+  Financials.fromJson(Map<String, dynamic> json) {
+    budgetTotal = json['budget_total'];
+    costActual = json['cost_actual'];
+    valuePlanned = json['value_planned'];
+    valueEarned = json['value_earned'];
+    cpi = json['cpi'];
+    spi = json['spi'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['budget_total'] = budgetTotal;
+    data['cost_actual'] = costActual;
+    data['value_planned'] = valuePlanned;
+    data['value_earned'] = valueEarned;
+    data['cpi'] = cpi;
+    data['spi'] = spi;
+    return data;
   }
 }

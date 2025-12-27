@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import '../../../data/controllers/data_controller.dart';
-import '../../../data/models/project_model.dart';
+import '../../../data/model/project_model.dart';
 
 class ProjectDetailController extends GetxController {
   final DataController dataController = Get.find<DataController>();
