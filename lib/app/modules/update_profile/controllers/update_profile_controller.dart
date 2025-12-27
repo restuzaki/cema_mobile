@@ -5,10 +5,12 @@ import 'package:get_storage/get_storage.dart';
 import '../../../service/auth_service.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../../service/storage_service.dart';
 
 class UpdateProfileController extends GetxController {
   final AuthService _authService = AuthService();
   final box = GetStorage();
+  final StorageService _storageService = StorageService();
 
   final namaController = TextEditingController();
   final numberController = TextEditingController();
@@ -41,11 +43,24 @@ class UpdateProfileController extends GetxController {
   }
 
   Future<void> updateProfile() async {
+    debugPrint("DEBUG: updateProfile called");
     try {
       String? userId = box.read('userId');
-      String? token = box.read('token');
+      String? token = await _storageService.getToken();
 
-      if (userId == null || token == null) return;
+      debugPrint(
+        "DEBUG: userId: $userId, token: ${token != null ? 'Found' : 'Null'}",
+      );
+
+      if (userId == null || token == null) {
+        debugPrint("DEBUG: Credentials missing. Aborting update.");
+        _showSnackbar(
+          'Session Expired',
+          'Silakan login ulang untuk memperbarui sesi.',
+          isError: true,
+        );
+        return;
+      }
 
       isLoading.value = true;
       FocusManager.instance.primaryFocus?.unfocus();
@@ -56,7 +71,11 @@ class UpdateProfileController extends GetxController {
         "email": emailController.text.trim(),
       };
 
+      debugPrint("DEBUG: Sending update data: $updateData");
+
       final response = await _authService.updateUser(userId, token, updateData);
+
+      debugPrint("DEBUG: Response: ${response.body}");
 
       if (response.statusCode == 200) {
         box.write('name', namaController.text.trim());
@@ -69,8 +88,8 @@ class UpdateProfileController extends GetxController {
         }
 
         if (Get.isRegistered<DashboardController>()) {
-           final dashboardCtrl = Get.find<DashboardController>();
-           dashboardCtrl.fetchUserProfile();
+          final dashboardCtrl = Get.find<DashboardController>();
+          dashboardCtrl.fetchUserProfile();
         }
 
         _showSnackbar('Berhasil', 'Data pribadi berhasil diperbarui');
