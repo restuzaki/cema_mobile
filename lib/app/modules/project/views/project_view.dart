@@ -1,3 +1,4 @@
+import 'package:cema_mobile/app/widgets/cema_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../design_system/tokens/colors.dart';
