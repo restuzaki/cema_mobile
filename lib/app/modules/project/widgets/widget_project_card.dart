@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../data/models/project_model.dart';
-import '../../../design_system/tokens/colors.dart';
-import '../../../design_system/tokens/typography.dart';
+import '../../../design_system/design_system.dart';
 import 'widget_metric_pill.dart';
 import 'widget_status_badge.dart';
 
@@ -30,13 +29,16 @@ class WidgetProjectCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12), // 8-16dp spacing
-        padding: const EdgeInsets.all(16),
+        margin: AppSpacing.symmetric(
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.xxs,
+        ),
+        padding: AppSpacing.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: AppColors.neutral000,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           border: Border.all(color: AppColors.neutral300),
-          // boxShadow: [AppShadows.cardShadow],
+          boxShadow: AppShadows.shadowMd,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

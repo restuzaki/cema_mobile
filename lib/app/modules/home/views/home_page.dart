@@ -1,4 +1,4 @@
-import 'package:cema_mobile/app/modules/task_manager/views/task_manager_view.dart';
+import 'package:cema_mobile/app/modules/project/views/project_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
@@ -7,13 +7,7 @@ import 'package:cema_mobile/app/design_system/design_system.dart';
 import '../controllers/home_controller.dart';
 
 class HomePage extends GetView<HomeController> {
-  HomePage({super.key});
-
-  static final List<Widget> _pages = [
-    DashboardView(),
-    TaskManagerPage(),
-    ProfilePage(),
-  ];
+  const HomePage({super.key});
 
   static const List<CustomNavbarItem> _navItems = [
     CustomNavbarItem(label: 'Dashboard', icon: Icons.home),
@@ -23,11 +17,17 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      DashboardView(onAvatarClicked: () => controller.changeTabIndex(2)),
+      ProjectView(onAvatarClicked: () => controller.changeTabIndex(2)),
+      ProfilePage(),
+    ];
+
     return Scaffold(
       body: Obx(
         () => IndexedStack(
           index: controller.selectedIndex.value,
-          children: _pages,
+          children: pages,
         ),
       ),
       floatingActionButton: _buildFabMenu(),

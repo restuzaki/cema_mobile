@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/repositories/project_repository.dart';
 import '../../../service/authenticated_client.dart';
@@ -9,15 +10,28 @@ class ProjectController extends GetxController {
     client: AuthenticatedClient(),
   );
 
+  final box = GetStorage();
+
   // Observable Variables
   final RxBool isLoading = false.obs;
   final RxList<Project> projects = <Project>[].obs;
   final RxString errorMessage = ''.obs;
 
+  var name = ''.obs;
+  var role = ''.obs;
+  var profilePic = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
+    getUserData();
     fetchProjects();
+  }
+
+  void getUserData() {
+    name.value = box.read('name');
+    role.value = box.read('role');
+    profilePic.value = box.read('profilePic') ?? "";
   }
 
   Future<void> fetchProjects() async {
