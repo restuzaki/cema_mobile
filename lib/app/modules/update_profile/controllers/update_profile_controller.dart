@@ -90,9 +90,6 @@ class UpdateProfileController extends GetxController {
 
       debugPrint("DEBUG: Sending update data: $updateData");
 
-      debugPrint("DEBUG: Sending update data: $updateData");
-
-      print("Sending update data: $updateData");
       final response = await _authService.updateUser(userId, token, updateData);
 
       debugPrint("DEBUG: Response: ${response.body}");
