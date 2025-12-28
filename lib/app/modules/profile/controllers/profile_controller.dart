@@ -27,7 +27,8 @@ class ProfileController extends GetxController {
 
   // Fungsi ini akan dipanggil oleh UpdateProfileController
   Future<void> fetchProfile() async {
-    // isLoading.value = true; // Opsional: aktifkan jika ingin spinner muncul saat refresh
+    isLoading.value =
+        true; // Opsional: aktifkan jika ingin spinner muncul saat refresh
     try {
       String? userId = box.read('userId');
       String? token = await _storageService.getToken();
@@ -42,10 +43,8 @@ class ProfileController extends GetxController {
           email.value = userData['email'] ?? '';
           photoUrl.value = userData['profilePicture'] ?? '';
 
-          // Sinkronkan ulang data di storage
-          box.write('name', name.value);
-          box.write('email', email.value);
-          box.write('phoneNumber', userData['phoneNumber'] ?? '');
+          // Removed local storage writes ('name', 'email', 'phoneNumber') as requested
+          // Relying on direct API response and in-memory state.
         }
       }
     } catch (e) {
@@ -80,11 +79,13 @@ class ProfileController extends GetxController {
 
         if (response.statusCode == 200) {
           photoUrl.value = base64Image;
-          box.write('photoUrl', base64Image);
+          // box.write('photoUrl', base64Image); // Removed local storage
           _safeShowSnackbar("Sukses", "Foto profil berhasil diperbarui");
 
           if (Get.isRegistered<DashboardController>()) {
-            Get.find<DashboardController>().fetchUserProfile();
+            final dashboardCtrl = Get.find<DashboardController>();
+            dashboardCtrl.profilePic.value = base64Image;
+            dashboardCtrl.fetchUserProfile();
           }
         } else {
           _safeShowSnackbar("Gagal", "Gagal update di server", isError: true);

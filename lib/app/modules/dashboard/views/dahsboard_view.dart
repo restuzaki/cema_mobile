@@ -52,10 +52,17 @@ class DashboardView extends GetView<DashboardController> {
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
       elevation: 0,
-      title: Row(
-        children: [
-          Obx(
-            () => Column(
+      title: Obx(() {
+        if (controller.isLoading.value) {
+          return const SizedBox(
+            height: 20, 
+            width: 20, 
+            child: CircularProgressIndicator(strokeWidth: 2)
+          );
+        }
+        return Row(
+          children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -72,9 +79,9 @@ class DashboardView extends GetView<DashboardController> {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
       actions: [
         GestureDetector(
           onTap: () => Get.toNamed('/notification'),
