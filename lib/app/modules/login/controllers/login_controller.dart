@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../service/auth_service.dart';
+import '../../../service/storage_service.dart';
 
 class LoginController extends GetxController {
   final AuthService _authService = AuthService();
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final box = GetStorage();
+  final StorageService _storageService = StorageService();
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -32,11 +34,19 @@ class LoginController extends GetxController {
       if (response.body == null || response.body.isEmpty)
         throw "No response from server";
       final data = jsonDecode(response.body);
+      debugPrint("Response: ${response.body}");
 
       if (response.statusCode == 200 && data['status'] == 'success') {
-        box.write('token', data['token']);
-        box.write('role', data['role']);
-        box.write('userId', data['id']);
+        // Save token securely
+        await _storageService.saveToken(data['data']['token']);
+        debugPrint("Token saved successfully ${data['data']['token']}");
+
+        // Save other non-sensitive data
+        box.write('role', data['data']['user']['role']);
+        box.write('userId', data['data']['user']['_id']);
+
+        debugPrint("Role saved successfully ${data['data']['user']['role']}");
+        debugPrint("User ID saved successfully ${data['data']['user']['_id']}");
 
         _showSnackbar("Success", "Welcome back!");
         await Future.delayed(const Duration(milliseconds: 1000));
@@ -79,7 +89,9 @@ class LoginController extends GetxController {
         final data = jsonDecode(response.body);
 
         if (response.statusCode == 200 && data['status'] == 'success') {
-          box.write('token', data['token']);
+          // Save token securely
+          await _storageService.saveToken(data['token']);
+
           box.write('role', data['role']);
           box.write('userId', data['id']);
 

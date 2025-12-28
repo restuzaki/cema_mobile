@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../models/project_model.dart';
+import '../model/project_model.dart';
 
 class DataController extends GetxController {
   // Observable lists for reactive UI updates

@@ -13,6 +13,8 @@ import 'package:cema_mobile/app/modules/privacy_and_policy/bindings/privacy_and_
 import 'package:cema_mobile/app/modules/privacy_and_policy/views/privacy_and_policy_view.dart';
 import 'package:cema_mobile/app/modules/profile/bindings/profile_binding.dart';
 import 'package:cema_mobile/app/modules/profile/views/profile_view.dart';
+import 'package:cema_mobile/app/modules/project/bindings/project_binding.dart';
+import 'package:cema_mobile/app/modules/project/views/project_view.dart';
 import 'package:cema_mobile/app/modules/register/bindings/register_binding.dart';
 import 'package:cema_mobile/app/modules/register/views/register_view.dart';
 import 'package:cema_mobile/app/modules/update_profile/bindings/update_profile_binding.dart';
@@ -93,6 +95,11 @@ class AppPages {
       name: _Paths.TAMBAHPROYEK,
       page: () => TambahProyekPage(),
       binding: TambahProyekBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROJECT,
+      page: () => ProjectView(),
+      binding: ProjectBinding(),
     ),
     GetPage(
       name: _Paths.PROJECT_DETAILS,

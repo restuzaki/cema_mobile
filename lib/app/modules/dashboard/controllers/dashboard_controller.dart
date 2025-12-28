@@ -3,10 +3,12 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/model/risk.dart';
 import '../../../service/auth_service.dart';
+import '../../../service/storage_service.dart';
 
 class DashboardController extends GetxController {
   final AuthService _authService = AuthService();
   final box = GetStorage();
+  final StorageService _storageService = StorageService();
 
   var userName = "Loading...".obs;
   var userRole = "Guest".obs;
@@ -22,7 +24,7 @@ class DashboardController extends GetxController {
   void fetchUserProfile() async {
     try {
       String? userId = box.read('userId');
-      String? token = box.read('token');
+      String? token = await _storageService.getToken();
 
       if (userId != null && token != null) {
         isLoading.value = true;

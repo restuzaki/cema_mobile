@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -59,6 +60,10 @@ class AuthService {
     String token,
     Map<String, dynamic> data,
   ) async {
+    debugPrint("token: $token");
+    debugPrint(
+      "Updating user $userId with data: $data in $baseUrl/users/$userId",
+    );
     final url = Uri.parse("$baseUrl/users/$userId");
     return await http.put(
       url,
