@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../../service/auth_service.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../project/controllers/project_controller.dart';
 import '../../../service/storage_service.dart';
 
 class UpdateProfileController extends GetxController {
@@ -23,20 +24,22 @@ class UpdateProfileController extends GetxController {
   void onInit() {
     super.onInit();
     _loadUserData();
+
+    // Gunakan debounce agar validasi tidak jalan terlalu sering saat mengetik cepat
     namaController.addListener(_validateForm);
     numberController.addListener(_validateForm);
     emailController.addListener(_validateForm);
   }
 
   void _loadUserData() async {
-    // Priority: Fetch from API to ensure fresh data
     try {
       String? userId = box.read('userId');
-      String? token = box.read('token');
+      String? token = await _storageService.getToken();
 
       if (userId != null && token != null) {
         isLoading.value = true;
         final response = await _authService.getUserProfile(userId, token);
+
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body)['data'];
           namaController.text = data['name'] ?? '';
@@ -46,36 +49,31 @@ class UpdateProfileController extends GetxController {
         }
       }
     } catch (e) {
-      print("Error loading user data: $e");
+      debugPrint("Error loading user data: $e");
     } finally {
       isLoading.value = false;
     }
   }
 
   void _validateForm() {
+    // Validasi sederhana: Tidak kosong & format email benar
+    bool isEmailValid = GetUtils.isEmail(emailController.text.trim());
+
     isFormValid.value =
         namaController.text.trim().isNotEmpty &&
-        numberController.text.trim().isNotEmpty &&
-        emailController.text.trim().isNotEmpty;
+        numberController.text.trim().length >= 3 &&
+        isEmailValid;
   }
 
   Future<void> updateProfile() async {
-    debugPrint("DEBUG: updateProfile called");
+    if (!isFormValid.value) return;
+
     try {
       String? userId = box.read('userId');
       String? token = await _storageService.getToken();
 
-      debugPrint(
-        "DEBUG: userId: $userId, token: ${token != null ? 'Found' : 'Null'}",
-      );
-
       if (userId == null || token == null) {
-        debugPrint("DEBUG: Credentials missing. Aborting update.");
-        _showSnackbar(
-          'Session Expired',
-          'Silakan login ulang untuk memperbarui sesi.',
-          isError: true,
-        );
+        _showSnackbar('Sesi Berakhir', 'Silakan login ulang.', isError: true);
         return;
       }
 
@@ -88,34 +86,23 @@ class UpdateProfileController extends GetxController {
         "email": emailController.text.trim(),
       };
 
-      debugPrint("DEBUG: Sending update data: $updateData");
-
       final response = await _authService.updateUser(userId, token, updateData);
-
-      debugPrint("DEBUG: Response: ${response.body}");
+      final responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Removed box.write as requested - rely on API/Memory state
+        // Ambil data terbaru hasil update dari backend
+        final updatedUser = responseData['data'];
 
-        if (Get.isRegistered<ProfileController>()) {
-          final profileCtrl = Get.find<ProfileController>();
-          // Optimistic update: Update UI immediately with the data we just sent
-          profileCtrl.name.value = namaController.text.trim();
-          profileCtrl.email.value = emailController.text.trim();
-          // Removed fetchProfile to avoid race condition with stale data
-        }
+        // SINKRONISASI: Update data di Controller lain secara sistematis
+        _syncControllers(updatedUser);
 
-        if (Get.isRegistered<DashboardController>()) {
-          final dashboardCtrl = Get.find<DashboardController>();
-          dashboardCtrl.fetchUserProfile();
-        }
+        Get.back(); // Kembali ke halaman profil setelah sukses
 
-        _showSnackbar('Berhasil', 'Data pribadi berhasil diperbarui');
+        _showSnackbar('Berhasil', 'Profil Anda telah diperbarui');
       } else {
-        final errorData = jsonDecode(response.body);
         _showSnackbar(
           'Gagal',
-          errorData['message'] ?? 'Gagal memperbarui data',
+          responseData['message'] ?? 'Gagal memperbarui data',
           isError: true,
         );
       }
@@ -126,14 +113,45 @@ class UpdateProfileController extends GetxController {
     }
   }
 
+  // Fungsi helper untuk sinkronisasi state di controller lain
+  void _syncControllers(Map<String, dynamic> updatedData) {
+    // Update ProfileController jika ada
+    if (Get.isRegistered<ProfileController>()) {
+      final profileCtrl = Get.find<ProfileController>();
+      profileCtrl.name.value = updatedData['name'] ?? '';
+      profileCtrl.email.value = updatedData['email'] ?? '';
+      // Jika ada field lain seperti phoneNumber di ProfileController, update juga di sini
+    }
+
+    // Update DashboardController jika ada
+    if (Get.isRegistered<DashboardController>()) {
+      Get.find<DashboardController>().fetchUserProfile();
+    }
+    
+    // Update ProjectController jika ada
+    if (Get.isRegistered<ProjectController>()) {
+      Get.find<ProjectController>().fetchUserProfile();
+    }
+  }
+
   void _showSnackbar(String title, String message, {bool isError = false}) {
+    // Pastikan context tersedia
+    if (Get.context == null) return;
+
+    // Hapus snackbar yang mungkin masih muncul sebelumnya agar tidak menumpuk
+    ScaffoldMessenger.of(Get.context!).removeCurrentSnackBar();
+
     ScaffoldMessenger.of(Get.context!).showSnackBar(
       SnackBar(
-        content: Text("$title: $message"),
+        content: Text(
+          "$title: $message",
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: isError ? Colors.redAccent : Colors.green,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(15),
         duration: const Duration(seconds: 2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

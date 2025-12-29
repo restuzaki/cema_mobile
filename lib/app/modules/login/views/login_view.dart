@@ -228,33 +228,33 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don’t have an account? ",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: Color(0xFFD9D9D9),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: controller.signUp,
-                          child: const Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              color: Color(0xFF6FB327),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
 
+                    // const SizedBox(height: 10),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     const Text(
+                    //       "Don’t have an account? ",
+                    //       style: TextStyle(
+                    //         fontWeight: FontWeight.bold,
+                    //         fontSize: 12,
+                    //         color: Color(0xFFD9D9D9),
+                    //       ),
+                    //     ),
+                    //     GestureDetector(
+                    //       onTap: controller.signUp,
+                    //       child: const Text(
+                    //         "Sign Up",
+                    //         style: TextStyle(
+                    //           color: Color(0xFF6FB327),
+                    //           fontSize: 12,
+                    //           fontWeight: FontWeight.bold,
+                    //           fontStyle: FontStyle.italic,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     const SizedBox(height: 20),
                   ],
                 ),
