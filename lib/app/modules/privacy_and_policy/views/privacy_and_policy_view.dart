@@ -68,7 +68,7 @@ class PrivacyPolicyPage extends GetView<PrivacyController> {
         Padding(
           padding: const EdgeInsets.only(right: 16),
           child: GestureDetector(
-            onTap: () => controller.shareAsPdf(),
+            onTap: () => controller.shareAsPdf(context),
             child: Container(
               width: 40,
               height: 40,
@@ -228,67 +228,67 @@ class PrivacyPolicyPage extends GetView<PrivacyController> {
           ),
         ),
         const SizedBox(height: 16),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const Text(
-                "Apakah Anda menyetujui kebijakan ini?",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Get.back(),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.grey,
-                        elevation: 0,
-                        side: BorderSide(color: Colors.grey.shade300),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text("Tutup"),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Get.snackbar(
-                          'Sukses',
-                          'Kebijakan telah disetujui',
-                          backgroundColor: greenColor,
-                          colorText: Colors.white,
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: greenColor,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: const Text("Setuju"),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+        // Container(
+        //   width: double.infinity,
+        //   decoration: BoxDecoration(
+        //     color: Colors.white,
+        //     borderRadius: BorderRadius.circular(12),
+        //     border: Border.all(color: Colors.grey.shade200),
+        //   ),
+        //   padding: const EdgeInsets.all(16),
+        //   child: Column(
+        //     children: [
+        //       const Text(
+        //         "Apakah Anda menyetujui kebijakan ini?",
+        //         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        //       ),
+        //       const SizedBox(height: 16),
+        //       Row(
+        //         children: [
+        //           Expanded(
+        //             child: ElevatedButton(
+        //               onPressed: () => Get.back(),
+        //               style: ElevatedButton.styleFrom(
+        //                 backgroundColor: Colors.white,
+        //                 foregroundColor: Colors.grey,
+        //                 elevation: 0,
+        //                 side: BorderSide(color: Colors.grey.shade300),
+        //                 shape: RoundedRectangleBorder(
+        //                   borderRadius: BorderRadius.circular(50),
+        //                 ),
+        //                 padding: const EdgeInsets.symmetric(vertical: 12),
+        //               ),
+        //               child: const Text("Tutup"),
+        //             ),
+        //           ),
+        //           const SizedBox(width: 12),
+        //           Expanded(
+        //             child: ElevatedButton(
+        //               onPressed: () {
+        //                 Get.snackbar(
+        //                   'Sukses',
+        //                   'Kebijakan telah disetujui',
+        //                   backgroundColor: greenColor,
+        //                   colorText: Colors.white,
+        //                 );
+        //               },
+        //               style: ElevatedButton.styleFrom(
+        //                 backgroundColor: greenColor,
+        //                 foregroundColor: Colors.white,
+        //                 elevation: 0,
+        //                 shape: RoundedRectangleBorder(
+        //                   borderRadius: BorderRadius.circular(50),
+        //                 ),
+        //                 padding: const EdgeInsets.symmetric(vertical: 12),
+        //               ),
+        //               child: const Text("Setuju"),
+        //             ),
+        //           ),
+        //         ],
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ],
     );
   }
