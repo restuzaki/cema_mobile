@@ -7,7 +7,7 @@ class AuthenticatedClient extends http.BaseClient {
   final http.Client _inner = http.Client();
 
   // Getter helper untuk URL agar tidak typo string
-  String get baseUrl => dotenv.env['API_URL'] ?? 'http://localhost:5000/api';
+  String get baseUrl => dotenv.env['API_KEY'] ?? 'http://localhost:5000/api';
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {

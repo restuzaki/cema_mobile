@@ -48,11 +48,16 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    return CemaHomeAppBar(
-      title: controller.userName.value,
-      subtitle: controller.userRole.value,
-      imageUrl: controller.profilePic.value,
-      onAvatarClicked: onAvatarClicked,
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(88.0),
+      child: Obx(
+        () => CemaHomeAppBar(
+          title: controller.userName.value,
+          subtitle: controller.userRole.value,
+          imageUrl: controller.profilePic.value,
+          onAvatarClicked: onAvatarClicked,
+        ),
+      ),
     );
   }
 
