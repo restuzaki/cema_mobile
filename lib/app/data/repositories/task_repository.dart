@@ -3,19 +3,18 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../service/authenticated_client.dart';
-import '../models/project_model.dart';
+import '../models/task_model.dart';
 import '../../core/exceptions/offline_success_exception.dart';
 import 'dart:async';
 
-class ProjectRepository {
+class TaskRepository {
   final AuthenticatedClient client;
   final GetStorage _storage = GetStorage();
 
   // Storage Keys
-  final String _cacheKey = 'offline_projects';
-  final String _queueKey = 'sync_action_queue';
+  final String _queueKey = 'sync_task_queue';
 
-  ProjectRepository({required this.client});
+  TaskRepository({required this.client});
 
   String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://localhost:5000/api';
 
@@ -29,11 +28,13 @@ class ProjectRepository {
   // READ LOGIC
   // ---------------------------------------------------------------------------
 
-  Future<List<Project>> getProjects() async {
+  Future<List<Task>> getTasks(String projectId) async {
+    final String cacheKey = 'offline_tasks_$projectId';
+
     // 1. Try Network First
     try {
       if (await _isOnline()) {
-        final url = Uri.parse('$_baseUrl/projects');
+        final url = Uri.parse('$_baseUrl/tasks/project/$projectId');
         final response = await client.get(url);
 
         if (response.statusCode == 200) {
@@ -43,27 +44,23 @@ class ProjectRepository {
             final List<dynamic> data = body['data'];
 
             // Save to Cache
-            await _storage.write(_cacheKey, data);
+            await _storage.write(cacheKey, data);
 
-            return data.map((e) => Project.fromJson(e)).toList();
+            return data.map((e) => Task.fromJson(e)).toList();
           } else {
             return [];
           }
         }
       }
-      // If server returns non-200, we might want to throw or fall back.
-      // For this pattern, let's fall back on error.
       throw Exception('Network failed or invalid response');
     } catch (e) {
       // 2. Fallback to Cache
-      // print('Fetching projects from cache due to: $e');
-      if (_storage.hasData(_cacheKey)) {
-        final cachedData = _storage.read(_cacheKey);
+      if (_storage.hasData(cacheKey)) {
+        final cachedData = _storage.read(cacheKey);
         if (cachedData is List) {
-          return cachedData.map((e) => Project.fromJson(e)).toList();
+          return cachedData.map((e) => Task.fromJson(e)).toList();
         }
       }
-      // If no cache and network failed
       rethrow;
     }
   }
@@ -72,24 +69,21 @@ class ProjectRepository {
   // WRITE LOGIC
   // ---------------------------------------------------------------------------
 
-  Future<void> createProject(Map<String, dynamic> projectData) async {
+  Future<void> createTask(Map<String, dynamic> taskData) async {
     await _handleWriteAction(
       type: 'CREATE',
-      apiUrl: '$_baseUrl/projects',
+      apiUrl: '$_baseUrl/tasks',
       method: 'POST',
-      payload: projectData,
+      payload: taskData,
     );
   }
 
-  Future<void> updateProject(
-    String id,
-    Map<String, dynamic> projectData,
-  ) async {
+  Future<void> updateTask(String id, Map<String, dynamic> taskData) async {
     await _handleWriteAction(
       type: 'UPDATE',
-      apiUrl: '$_baseUrl/projects/$id',
+      apiUrl: '$_baseUrl/tasks/$id',
       method: 'PUT',
-      payload: projectData,
+      payload: taskData,
       entityId: id,
     );
   }
@@ -116,24 +110,17 @@ class ProjectRepository {
         }
 
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          // Success: We could update local cache manually here for immediate consistency,
-          // but calling getProjects() (refresh) in controller is safer/simpler for now.
           return;
         } else {
           throw Exception('API Error: ${response.statusCode} ${response.body}');
         }
       } catch (e) {
-        // If API call fails (e.g. timeout), do we fallback to queue?
-        // User requirement says: "IF OFFLINE". It doesn't explicitly say "If API Fails".
-        // However, robust offline-first usually implies queueing on network errors too.
-        // For now, adhering strictly to "IF OFFLINE" based on connectivity check,
-        // but typically one might want to queue on SocketException too.
         rethrow;
       }
     } else {
       // OFFLINE: Add to Queue
       _addToQueue(type, payload, entityId);
-      throw OfflineSuccessException('Action saved to offline queue.');
+      throw OfflineSuccessException('Task saved to offline queue.');
     }
   }
 
@@ -145,10 +132,10 @@ class ProjectRepository {
     final List<dynamic> queue = _storage.read(_queueKey) ?? [];
 
     final action = {
-      'id': 'TEMP_${DateTime.now().millisecondsSinceEpoch}',
+      'id': 'TEMP_TASK_${DateTime.now().millisecondsSinceEpoch}',
       'type': type, // CREATE or UPDATE
       'payload': payload,
-      'entityId': entityId, // Null for create
+      'entityId': entityId,
       'createdAt': DateTime.now().toIso8601String(),
     };
 
@@ -166,39 +153,19 @@ class ProjectRepository {
     List<dynamic> queue = _storage.read(_queueKey);
     if (queue.isEmpty) return;
 
-    // print('Syncing ${queue.length} pending actions...');
-
-    // We copy the queue to iterate safely, but we must modify the persistent storage queue carefully.
-    // Strategy: Process one by one. If success, remove from storage immediately.
-    // If fail, keep it (retry later).
-
     List<dynamic> remainingQueue = List.from(queue);
-    bool anySuccess = false;
 
     for (int i = 0; i < queue.length; i++) {
       final item = queue[i];
       try {
         await _processSingleAction(item);
-
-        // If successful, remove this specific item from the remaining list
-        // We use ID to ensure we remove the correct one
         remainingQueue.removeWhere((q) => q['id'] == item['id']);
-        anySuccess = true;
       } catch (e) {
-        // print('Failed to sync item ${item['id']}: $e');
-        // Keep in queue to retry later
+        // Keep in queue
       }
     }
 
-    // Update storage with what's left
     await _storage.write(_queueKey, remainingQueue);
-
-    // If we synced anything, refresh the main list
-    if (anySuccess) {
-      try {
-        await getProjects();
-      } catch (_) {}
-    }
   }
 
   Future<void> _processSingleAction(Map<String, dynamic> action) async {
@@ -210,18 +177,18 @@ class ProjectRepository {
     dynamic response;
 
     if (type == 'CREATE') {
-      url = Uri.parse('$_baseUrl/projects');
+      url = Uri.parse('$_baseUrl/tasks');
       response = await client.post(url, body: json.encode(payload));
     } else if (type == 'UPDATE' && entityId != null) {
-      url = Uri.parse('$_baseUrl/projects/$entityId');
+      url = Uri.parse('$_baseUrl/tasks/$entityId');
       response = await client.put(url, body: json.encode(payload));
     } else {
-      return; // Unknown type, just drop? Or keep? treating as success to remove bad data.
+      return;
     }
 
     if (response != null) {
       if (response.statusCode >= 200 && response.statusCode < 300) {
-        return; // Success
+        return;
       } else {
         throw Exception('Sync failed: ${response.statusCode}');
       }

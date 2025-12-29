@@ -48,6 +48,7 @@ class TaskModel {
   final DateTime dueDate;
   final String phase;
   final String status; // 'ongoing', 'late', 'done', 'menunggu'
+  final num? budgetAllocation;
 
   TaskModel({
     required this.id,
@@ -59,6 +60,7 @@ class TaskModel {
     required this.dueDate,
     required this.phase,
     required this.status,
+    this.budgetAllocation,
   });
 
   TaskModel copyWith({
@@ -71,6 +73,7 @@ class TaskModel {
     DateTime? dueDate,
     String? phase,
     String? status,
+    num? budgetAllocation,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -82,6 +85,7 @@ class TaskModel {
       dueDate: dueDate ?? this.dueDate,
       phase: phase ?? this.phase,
       status: status ?? this.status,
+      budgetAllocation: budgetAllocation ?? this.budgetAllocation,
     );
   }
 }
