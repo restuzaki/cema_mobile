@@ -16,6 +16,32 @@ class ProjectModel {
     required this.cpi,
     required this.spi,
   });
+  
+  // 1. Mengubah data dari Firestore menjadi Objek ProjectModel
+  factory ProjectModel.fromFirestore(Map<String, dynamic> data, String documentId) {
+    return ProjectModel(
+      id: documentId, // ID dokumen diambil dari Firestore
+      name: data['name'] ?? '',
+      phase: data['phase'] ?? '',
+      client: data['client'] ?? '',
+      status: data['status'] ?? 'normal',
+      // Memastikan tipe data double agar tidak error jika di Firestore tertulis int
+      cpi: (data['cpi'] ?? 0.0).toDouble(),
+      spi: (data['spi'] ?? 0.0).toDouble(),
+    );
+  }
+
+  // 2. Mengubah Objek ProjectModel menjadi Map untuk disimpan ke Firestore
+  Map<String, dynamic> toFirestore() {
+    return {
+      "name": name,
+      "phase": phase,
+      "client": client,
+      "status": status,
+      "cpi": cpi,
+      "spi": spi,
+    };
+  }
 
   ProjectModel copyWith({
     String? id,
