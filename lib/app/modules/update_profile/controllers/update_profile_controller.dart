@@ -34,8 +34,7 @@ class UpdateProfileController extends GetxController {
   void _loadUserData() async {
     try {
       String? userId = box.read('userId');
-      String? token = await _storageService
-          .getToken(); // Konsisten pakai StorageService
+      String? token = await _storageService.getToken();
 
       if (userId != null && token != null) {
         isLoading.value = true;

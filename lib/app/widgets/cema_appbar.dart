@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cema_mobile/app/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -148,7 +149,9 @@ class CemaHomeAppBar extends CemaAppBar {
             radius: 25,
             backgroundColor: Colors.grey[200],
             backgroundImage: imageUrl.isNotEmpty
-                ? NetworkImage(imageUrl)
+                ? (imageUrl.startsWith('http')
+                    ? NetworkImage(imageUrl)
+                    : MemoryImage(base64Decode(imageUrl)) as ImageProvider)
                 : null,
             child: imageUrl.isEmpty
                 ? const Icon(Icons.person, size: 35, color: Colors.grey)

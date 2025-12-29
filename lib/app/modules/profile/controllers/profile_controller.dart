@@ -6,6 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../service/auth_service.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../project/controllers/project_controller.dart';
 import '../../../service/storage_service.dart';
 
 class ProfileController extends GetxController {
@@ -86,6 +87,12 @@ class ProfileController extends GetxController {
             final dashboardCtrl = Get.find<DashboardController>();
             dashboardCtrl.profilePic.value = base64Image;
             dashboardCtrl.fetchUserProfile();
+          }
+
+          if (Get.isRegistered<ProjectController>()) {
+            final projectCtrl = Get.find<ProjectController>();
+            projectCtrl.profilePic.value = base64Image;
+            projectCtrl.fetchUserProfile();
           }
         } else {
           _safeShowSnackbar("Gagal", "Gagal update di server", isError: true);
