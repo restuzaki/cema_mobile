@@ -1,10 +1,12 @@
 import 'package:cema_mobile/app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:cema_mobile/app/modules/project_detail/view/project_detail_view.dart';
 import 'package:cema_mobile/app/widgets/cema_appbar.dart';
+import 'package:cema_mobile/app/widgets/widget_project_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../data/model/risk.dart';
+import '../../../data/models/project_model.dart';
+import '../../home/controllers/home_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
   final VoidCallback? onAvatarClicked;
@@ -34,7 +36,7 @@ class DashboardView extends GetView<DashboardController> {
                 const SizedBox(height: 16),
                 _buildProjectCard(greenColor, redColor, lightGreyColor),
                 const SizedBox(height: 24),
-                _buildSectionHeader("Proyek Berisiko"),
+                _buildRiskyProjectSectionHeader(),
                 const SizedBox(height: 16),
                 _buildRiskyProjectHeader(Colors.black),
                 const SizedBox(height: 20),
@@ -84,6 +86,35 @@ class DashboardView extends GetView<DashboardController> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildRiskyProjectSectionHeader() {
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            "Proyek Berisiko",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          if (controller.hasMoreProjects)
+            TextButton(
+              onPressed: () => Get.find<HomeController>().changeTabIndex(1),
+              child: const Text(
+                "Tampilkan Semua",
+                style: TextStyle(
+                  color: Color(0xFF8DC63F),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -352,10 +383,17 @@ class DashboardView extends GetView<DashboardController> {
       () => ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: controller.filteredProjects.length,
+        itemCount: controller.limitedFilteredProjects.length,
         itemBuilder: (context, index) {
-          final project = controller.filteredProjects[index];
-          return _buildRiskyProjectCard(project);
+          final project = controller.limitedFilteredProjects[index];
+          return WidgetProjectCard(
+            project: project,
+            horizontalMargin: 0,
+            onTap: () => Get.toNamed(
+              '/project-details',
+              arguments: {'project': controller.filteredProjects[index]},
+            ),
+          );
         },
       ),
     );
@@ -417,6 +455,7 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
 
+  /*
   Widget _buildRiskyProjectCard(Project project) {
     Color riskTagColor;
     Color riskBgColor;
@@ -595,4 +634,5 @@ class DashboardView extends GetView<DashboardController> {
       ),
     );
   }
+  */
 }
