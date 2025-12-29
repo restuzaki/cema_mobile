@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../data/repositories/project_repository.dart';
+import '../../../service/authenticated_client.dart';
 import 'package:get/get.dart';
 import 'package:cema_mobile/app/design_system/design_system.dart';
 import '../../../data/controllers/data_controller.dart';
@@ -12,6 +14,8 @@ class ProjectDetailController extends GetxController {
   var mainTabIndex = 0.obs;
   var taskFilterIndex = 0.obs;
   var financeFilterIndex = 0.obs;
+
+  var isLoading = true.obs;
 
   Project? get currentProject => dataController.selectedProject.value;
 
@@ -77,6 +81,33 @@ class ProjectDetailController extends GetxController {
     // Initialize form with current data if available
     ever(dataController.selectedProject, (_) => _initSettingsForm());
     _initSettingsForm();
+    fetchProjectDetails();
+  }
+
+  void fetchProjectDetails() async {
+    isLoading.value = true;
+    final id = currentProject?.id;
+    if (id == null) {
+      isLoading.value = false;
+      return;
+    }
+    try {
+      final projects = await _repository.getProjects();
+      final freshProject = projects.firstWhere(
+        (p) => p.id == id,
+        orElse: () => throw Exception('Project not found'),
+      );
+
+      dataController.selectProject(freshProject); // Updates the reactive value
+      dataController.updateProject(
+        id,
+        freshProject,
+      ); // Updates the list in DataController
+    } catch (e) {
+      print("Error fetching project details: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void _initSettingsForm() {
@@ -105,25 +136,77 @@ class ProjectDetailController extends GetxController {
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
-  void saveSettings() {
-    final updatedData = {
-      'name': nameEdit.text,
-      'client': clientEdit.text,
-      'description': descEdit.text,
-      'budget': budgetEdit.text,
-      'phase': phaseEdit.value,
-      'startDate': startDateEdit.text,
-      'endDate': endDateEdit.text,
-    };
-    print('Saving project settings: $updatedData');
+  // Repository
+  final ProjectRepository _repository = ProjectRepository(
+    client: AuthenticatedClient(),
+  );
 
-    Get.snackbar(
-      'Sukses',
-      'Perubahan projek berhasil disimpan',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.success100,
-      colorText: AppColors.success700,
-    );
+  void saveSettings() async {
+    final project = currentProject;
+    if (project == null || project.id == null) return;
+
+    // 1. Prepare Data
+    // Parse Dates
+    DateTime? start;
+    DateTime? end;
+    try {
+      if (startDateEdit.text.isNotEmpty)
+        start = DateTime.parse(startDateEdit.text);
+      if (endDateEdit.text.isNotEmpty) end = DateTime.parse(endDateEdit.text);
+    } catch (_) {}
+
+    // Prepare Financials
+    // We want to update budget but keep other existing financials if possible
+    // Since PUT usually replaces, we should ideally construct the full object or what backend expects.
+    // Assuming backend handles partial updates or we send what we have.
+    Map<String, dynamic> financialsPayload = {};
+    if (project.financials != null) {
+      financialsPayload = project.financials!.toJson();
+    }
+    financialsPayload['budget_total'] = num.tryParse(budgetEdit.text) ?? 0;
+
+    final Map<String, dynamic> payload = {
+      'name': nameEdit.text,
+      'clientName': clientEdit.text,
+      'description': descEdit.text,
+      'financials': financialsPayload,
+      // 'phase': phaseEdit.value, // Not in model yet
+      if (start != null) 'startDate': start.toIso8601String(),
+      if (end != null) 'endDate': end.toIso8601String(),
+    };
+
+    try {
+      // 2. Call API
+      await _repository.updateProject(project.id!, payload);
+
+      // 3. Update Local State (Immediate Feedback)
+      final updatedProject = Project.fromJson({
+        ...project.toJson(),
+        ...payload,
+      });
+
+      dataController.updateProject(project.id!, updatedProject);
+      dataController.selectProject(updatedProject);
+
+      // 4. Fetch Fresh Data (Ensure Consistency)
+      fetchProjectDetails();
+
+      Get.snackbar(
+        'Sukses',
+        'Perubahan projek berhasil disimpan',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.success100,
+        colorText: AppColors.success700,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        'Gagal menyimpan perubahan: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error100,
+        colorText: AppColors.error700,
+      );
+    }
   }
 
   bool get canEdit => true;

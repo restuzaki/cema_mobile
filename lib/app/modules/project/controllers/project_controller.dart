@@ -178,8 +178,9 @@ class ProjectController extends GetxController {
     currentTab.value = index;
   }
 
-  void navigateToDetail(Project project) {
+  void navigateToDetail(Project project) async {
     _dataController.selectProject(project);
-    Get.toNamed('/project-details', arguments: {'project': project});
+    await Get.toNamed('/project-details', arguments: {'project': project});
+    fetchProjects(); // Refresh list on return
   }
 }

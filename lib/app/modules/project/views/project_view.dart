@@ -17,8 +17,12 @@ class ProjectView extends GetView<ProjectController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: Obx(
-        () => SafeArea(
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return SafeArea(
           child: CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -77,10 +81,6 @@ class ProjectView extends GetView<ProjectController> {
                 delegate: SliverChildBuilderDelegate(
                   childCount: controller.filteredProjects.length,
                   (context, index) {
-                    if (controller.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
                     return WidgetProjectCard(
                       project: controller.filteredProjects[index],
                       onTap: () => controller.navigateToDetail(
@@ -94,8 +94,8 @@ class ProjectView extends GetView<ProjectController> {
               SliverToBoxAdapter(child: SizedBox(height: 96)),
             ],
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 

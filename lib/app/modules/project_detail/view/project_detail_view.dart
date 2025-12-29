@@ -70,13 +70,16 @@ class ProjectDetailView extends StatelessWidget {
                 },
               ),
       ),
-      body: SafeArea(
-        minimum: AppSpacing.only(bottom: AppSpacing.lg),
-        child: Column(
-          children: [
-            Expanded(
-              child: Obx(
-                () => SingleChildScrollView(
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return SafeArea(
+          minimum: AppSpacing.only(bottom: AppSpacing.lg),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
                   padding: AppSpacing.paddingMd,
                   child: controller.mainTabIndex.value == 0
                       ? TaskTabContent(controller: controller)
@@ -85,10 +88,10 @@ class ProjectDetailView extends StatelessWidget {
                       : SettingsTabContent(controller: controller),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }
