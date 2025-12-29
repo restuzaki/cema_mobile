@@ -1,148 +1,34 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cema_mobile/app/design_system/design_system.dart';
 import '../../../data/controllers/data_controller.dart';
 import '../../../data/models/project_model.dart';
+import '../../../data/model/task_model.dart';
+import '../../../data/model/expense_model.dart';
 
 class ProjectDetailController extends GetxController {
   final DataController dataController = Get.find<DataController>();
 
   var mainTabIndex = 0.obs;
   var taskFilterIndex = 0.obs;
-  var expenseFilterIndex = 0.obs;
+  var financeFilterIndex = 0.obs;
 
-  // Dummy data if no project selected
-  ProjectModel? get currentProject =>
-      dataController.selectedProject.value ?? _getDummyProject();
+  Project? get currentProject => dataController.selectedProject.value;
 
-  ProjectModel _getDummyProject() {
-    return ProjectModel(
-      id: 'dummy_proj',
-      name: 'Project Dummy',
-      phase: 'Development',
-      client: 'PT Example',
-      status: 'normal',
-      cpi: 1.0,
-      spi: 1.0,
-    );
-  }
+  // Tabs for Filter
+  final List<String> taskFilters = [
+    'Semua',
+    'Berlangsung',
+    'Terlambat',
+    'Selesai',
+  ];
+  final List<String> financeFilters = ['Semua', 'Pemasukan', 'Pengeluaran'];
 
-  List<TaskModel> get tasks {
-    if (currentProject == null) return _getDummyTasks();
-    final projectTasks = dataController.getTasksByProject(currentProject!.id);
-    return projectTasks.isEmpty ? _getDummyTasks() : projectTasks;
-  }
+  List<TaskModel> get tasks =>
+      dataController.getTasksByProject(currentProject?.id ?? '');
 
-  List<ExpenseModel> get expenses {
-    if (currentProject == null) return _getDummyExpenses();
-    final projectExpenses = dataController.getExpensesByProject(
-      currentProject!.id,
-    );
-    return projectExpenses.isEmpty ? _getDummyExpenses() : projectExpenses;
-  }
-
-  List<TaskModel> _getDummyTasks() {
-    return [
-      TaskModel(
-        id: 'dummy_task_1',
-        projectId: 'dummy_proj',
-        title: 'Membuat Design UI/UX',
-        responsibleName: 'Ahmad Zaki',
-        description: 'Membuat design interface untuk aplikasi mobile',
-        startDate: DateTime(2025, 11, 1),
-        dueDate: DateTime(2025, 11, 18),
-        phase: 'Design',
-        status: 'ongoing',
-      ),
-      TaskModel(
-        id: 'dummy_task_2',
-        projectId: 'dummy_proj',
-        title: 'Implementasi Backend API',
-        responsibleName: 'Budi Santoso',
-        description: 'Membuat REST API untuk sistem manajemen',
-        startDate: DateTime(2025, 11, 10),
-        dueDate: DateTime(2025, 11, 25),
-        phase: 'Development',
-        status: 'ongoing',
-      ),
-      TaskModel(
-        id: 'dummy_task_3',
-        projectId: 'dummy_proj',
-        title: 'Testing Sistem Login',
-        responsibleName: 'Citra Dewi',
-        description: 'Melakukan testing untuk fitur authentication',
-        startDate: DateTime(2025, 11, 5),
-        dueDate: DateTime(2025, 11, 15),
-        phase: 'Testing',
-        status: 'late',
-      ),
-      TaskModel(
-        id: 'dummy_task_4',
-        projectId: 'dummy_proj',
-        title: 'Setup Database',
-        responsibleName: 'Doni Pratama',
-        description: 'Konfigurasi database PostgreSQL',
-        startDate: DateTime(2025, 10, 20),
-        dueDate: DateTime(2025, 11, 1),
-        phase: 'Infrastructure',
-        status: 'done',
-      ),
-      TaskModel(
-        id: 'dummy_task_5',
-        projectId: 'dummy_proj',
-        title: 'Code Review Sprint 1',
-        responsibleName: 'Eka Putri',
-        description: 'Review code untuk sprint pertama',
-        startDate: DateTime(2025, 11, 20),
-        dueDate: DateTime(2025, 11, 22),
-        phase: 'Development',
-        status: 'menunggu',
-      ),
-    ];
-  }
-
-  List<ExpenseModel> _getDummyExpenses() {
-    return [
-      ExpenseModel(
-        id: 'dummy_exp_1',
-        projectId: 'dummy_proj',
-        amount: 15000000,
-        description: 'Pembelian lisensi software development tools',
-        status: 'pending',
-        createdAt: DateTime(2025, 11, 15),
-      ),
-      ExpenseModel(
-        id: 'dummy_exp_2',
-        projectId: 'dummy_proj',
-        amount: 8500000,
-        description: 'Biaya hosting dan domain untuk 1 tahun',
-        status: 'pending',
-        createdAt: DateTime(2025, 11, 16),
-      ),
-      ExpenseModel(
-        id: 'dummy_exp_3',
-        projectId: 'dummy_proj',
-        amount: 25000000,
-        description: 'Pembayaran konsultan IT security',
-        status: 'approved',
-        createdAt: DateTime(2025, 11, 10),
-      ),
-      ExpenseModel(
-        id: 'dummy_exp_4',
-        projectId: 'dummy_proj',
-        amount: 12000000,
-        description: 'Pembelian server untuk staging environment',
-        status: 'approved',
-        createdAt: DateTime(2025, 11, 5),
-      ),
-      ExpenseModel(
-        id: 'dummy_exp_5',
-        projectId: 'dummy_proj',
-        amount: 3500000,
-        description: 'Biaya meeting dan koordinasi tim',
-        status: 'pending',
-        createdAt: DateTime(2025, 11, 17),
-      ),
-    ];
-  }
+  List<ExpenseModel> get expenses =>
+      dataController.getExpensesByProject(currentProject?.id ?? '');
 
   List<TaskModel> get filteredTasks {
     final idx = taskFilterIndex.value;
@@ -153,16 +39,20 @@ class ProjectDetailController extends GetxController {
   }
 
   List<ExpenseModel> get filteredExpenses {
-    final idx = expenseFilterIndex.value;
-    if (idx == 0) return expenses.where((e) => e.status == 'pending').toList();
+    final idx = financeFilterIndex.value;
+    if (idx == 0) {
+      return expenses.where((e) => e.status == 'pending').toList();
+    }
     return expenses;
   }
 
   void changeMainTab(int index) => mainTabIndex.value = index;
-
   void changeTaskFilter(int index) => taskFilterIndex.value = index;
+  void changeFinanceFilter(int index) => financeFilterIndex.value = index;
 
-  void changeExpenseFilter(int index) => expenseFilterIndex.value = index;
+  String formatDate(DateTime date) {
+    return "${date.day}/${date.month}/${date.year}";
+  }
 
   void acceptExpense(String expenseId) {
     dataController.acceptExpense(expenseId);
@@ -171,4 +61,70 @@ class ProjectDetailController extends GetxController {
   void rejectExpense(String expenseId) {
     dataController.rejectExpense(expenseId);
   }
+
+  // Settings Form Controllers
+  final nameEdit = TextEditingController();
+  final clientEdit = TextEditingController();
+  final descEdit = TextEditingController();
+  final budgetEdit = TextEditingController();
+  final startDateEdit = TextEditingController();
+  final endDateEdit = TextEditingController();
+  var phaseEdit = 'Development'.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Initialize form with current data if available
+    ever(dataController.selectedProject, (_) => _initSettingsForm());
+    _initSettingsForm();
+  }
+
+  void _initSettingsForm() {
+    final project = currentProject;
+    if (project != null) {
+      nameEdit.text = project.name ?? '';
+      clientEdit.text = project.clientName ?? '';
+      descEdit.text = project.description ?? '';
+      budgetEdit.text = project.financials?.budgetTotal?.toString() ?? '0';
+
+      // Phase is missing in new Project model, defaulting or keeping existing logic if possible.
+      // For now, we leave it as default or could map from status if needed.
+      // phaseEdit.value = project.phase;
+
+      if (project.startDate != null) {
+        onDateSelected(startDateEdit, project.startDate!);
+      }
+      if (project.endDate != null) {
+        onDateSelected(endDateEdit, project.endDate!);
+      }
+    }
+  }
+
+  void onDateSelected(TextEditingController controller, DateTime date) {
+    controller.text =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+
+  void saveSettings() {
+    final updatedData = {
+      'name': nameEdit.text,
+      'client': clientEdit.text,
+      'description': descEdit.text,
+      'budget': budgetEdit.text,
+      'phase': phaseEdit.value,
+      'startDate': startDateEdit.text,
+      'endDate': endDateEdit.text,
+    };
+    print('Saving project settings: $updatedData');
+
+    Get.snackbar(
+      'Sukses',
+      'Perubahan projek berhasil disimpan',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.success100,
+      colorText: AppColors.success700,
+    );
+  }
+
+  bool get canEdit => true;
 }

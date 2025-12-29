@@ -6,7 +6,7 @@ import 'package:cema_mobile/app/modules/dashboard/bindings/dashboard_binding.dar
 import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
 import 'package:cema_mobile/app/modules/forget_password/bindings/forget_password_binding.dart';
 import 'package:cema_mobile/app/modules/forget_password/views/forget_password_view.dart';
-import 'package:cema_mobile/app/modules/home/views/home_navbar.dart';
+import 'package:cema_mobile/app/modules/home/views/home_page.dart';
 import 'package:cema_mobile/app/modules/login/bindings/login_binding.dart';
 import 'package:cema_mobile/app/modules/login/views/login_view.dart';
 import 'package:cema_mobile/app/modules/privacy_and_policy/bindings/privacy_and_policy_binding.dart';

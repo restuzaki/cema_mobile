@@ -6,10 +6,12 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../service/auth_service.dart';
 import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../../service/storage_service.dart';
 
 class ProfileController extends GetxController {
   final AuthService _authService = AuthService();
   final box = GetStorage();
+  final StorageService _storageService = StorageService();
   final ImagePicker _picker = ImagePicker();
 
   var name = ''.obs;
@@ -25,10 +27,11 @@ class ProfileController extends GetxController {
 
   // Fungsi ini akan dipanggil oleh UpdateProfileController
   Future<void> fetchProfile() async {
-    isLoading.value = true; // Opsional: aktifkan jika ingin spinner muncul saat refresh
+    isLoading.value =
+        true; // Opsional: aktifkan jika ingin spinner muncul saat refresh
     try {
       String? userId = box.read('userId');
-      String? token = box.read('token');
+      String? token = await _storageService.getToken();
 
       if (userId != null && token != null) {
         final response = await _authService.getUserProfile(userId, token);
@@ -67,7 +70,7 @@ class ProfileController extends GetxController {
       String base64Image = base64Encode(imageBytes);
 
       String? userId = box.read('userId');
-      String? token = box.read('token');
+      String? token = await _storageService.getToken();
 
       if (userId != null && token != null) {
         final response = await _authService.updateUser(userId, token, {
@@ -78,8 +81,8 @@ class ProfileController extends GetxController {
           photoUrl.value = base64Image;
           // box.write('photoUrl', base64Image); // Removed local storage
           _safeShowSnackbar("Sukses", "Foto profil berhasil diperbarui");
-          
-           if (Get.isRegistered<DashboardController>()) {
+
+          if (Get.isRegistered<DashboardController>()) {
             final dashboardCtrl = Get.find<DashboardController>();
             dashboardCtrl.profilePic.value = base64Image;
             dashboardCtrl.fetchUserProfile();
@@ -107,7 +110,7 @@ class ProfileController extends GetxController {
   }
 
   void logout() async {
-    await box.erase();
+    await _storageService.clearAll();
     Get.offAllNamed('/login');
   }
 

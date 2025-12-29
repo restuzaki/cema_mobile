@@ -1,14 +1,16 @@
 import 'package:get/get.dart';
 import '../models/project_model.dart';
+import '../model/task_model.dart';
+import '../model/expense_model.dart';
 
 class DataController extends GetxController {
   // Observable lists for reactive UI updates
-  final RxList<ProjectModel> projects = <ProjectModel>[].obs;
+  final RxList<Project> projects = <Project>[].obs;
   final RxList<TaskModel> allTasks = <TaskModel>[].obs;
   final RxList<ExpenseModel> allExpenses = <ExpenseModel>[].obs;
 
   // Currently selected project
-  final Rx<ProjectModel?> selectedProject = Rx<ProjectModel?>(null);
+  final Rx<Project?> selectedProject = Rx<Project?>(null);
 
   @override
   void onInit() {
@@ -18,24 +20,22 @@ class DataController extends GetxController {
 
   // Initialize with dummy data
   void _initializeDummyData() {
-    final project1 = ProjectModel(
+    final project1 = Project(
       id: 'proj_1',
       name: 'Website Redesign',
-      phase: 'Development',
-      client: 'PT Maju Jaya',
-      status: 'berisiko',
-      cpi: 0.91,
-      spi: 1.1,
+      // phase: 'Development', // Project model has no phase
+      clientName: 'PT Maju Jaya',
+      status: 'berisiko', // Using status as provided
+      financials: Financials(cpi: 0.91, spi: 1.1, budgetTotal: 500000000),
     );
 
-    final project2 = ProjectModel(
+    final project2 = Project(
       id: 'proj_2',
       name: 'Mobile App',
-      phase: 'Testing',
-      client: 'CV Digital',
+      // phase: 'Testing',
+      clientName: 'CV Digital',
       status: 'darurat',
-      cpi: 0.8,
-      spi: 1.1,
+      financials: Financials(cpi: 0.8, spi: 1.1, budgetTotal: 750000000),
     );
 
     projects.addAll([project1, project2]);
@@ -48,7 +48,6 @@ class DataController extends GetxController {
         title: 'Design Homepage',
         responsibleName: 'John Doe',
         description: 'Create new homepage design',
-        startDate: DateTime(2025, 11, 10),
         dueDate: DateTime(2025, 11, 18),
         phase: 'Development',
         status: 'ongoing',
@@ -59,7 +58,6 @@ class DataController extends GetxController {
         title: 'Implement Login',
         responsibleName: 'Jane Smith',
         description: 'Implement user login functionality',
-        startDate: DateTime(2025, 11, 15),
         dueDate: DateTime(2025, 11, 20),
         phase: 'Development',
         status: 'ongoing',
@@ -70,7 +68,6 @@ class DataController extends GetxController {
         title: 'Fix Bug API',
         responsibleName: 'Bob Wilson',
         description: 'Fix authentication bug',
-        startDate: DateTime(2025, 11, 5),
         dueDate: DateTime(2025, 11, 10),
         phase: 'Development',
         status: 'late',
@@ -81,7 +78,6 @@ class DataController extends GetxController {
         title: 'UI Testing',
         responsibleName: 'Alice Brown',
         description: 'Test all UI components',
-        startDate: DateTime(2025, 11, 12),
         dueDate: DateTime(2025, 11, 22),
         phase: 'Testing',
         status: 'ongoing',
@@ -172,12 +168,12 @@ class DataController extends GetxController {
   }
 
   // Add new project
-  void addProject(ProjectModel project) {
+  void addProject(Project project) {
     projects.add(project);
   }
 
   // Update project
-  void updateProject(String projectId, ProjectModel updatedProject) {
+  void updateProject(String projectId, Project updatedProject) {
     final index = projects.indexWhere((project) => project.id == projectId);
     if (index != -1) {
       projects[index] = updatedProject;
@@ -186,12 +182,12 @@ class DataController extends GetxController {
   }
 
   // Select project
-  void selectProject(ProjectModel project) {
+  void selectProject(Project project) {
     selectedProject.value = project;
   }
 
   // Get project by ID
-  ProjectModel? getProjectById(String projectId) {
+  Project? getProjectById(String projectId) {
     try {
       return projects.firstWhere((project) => project.id == projectId);
     } catch (e) {
@@ -200,7 +196,7 @@ class DataController extends GetxController {
   }
 
   // Filter projects by status
-  List<ProjectModel> getProjectsByStatus(String? status) {
+  List<Project> getProjectsByStatus(String? status) {
     if (status == null || status == 'all') return projects;
     return projects.where((project) => project.status == status).toList();
   }

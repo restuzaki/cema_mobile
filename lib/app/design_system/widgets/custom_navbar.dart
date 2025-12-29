@@ -18,7 +18,7 @@ class CustomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 84,
+      padding: EdgeInsets.only(top: AppSpacing.xs),
       decoration: BoxDecoration(
         color: AppColors.neutral900,
         boxShadow: AppShadows.shadowLg,
@@ -74,7 +74,7 @@ class _NavbarItemWidget extends StatelessWidget {
                 ),
                 if (isActive)
                   Positioned(
-                    top: -16,
+                    top: -AppSpacing.md,
                     left: 0,
                     right: 0,
                     child: Center(

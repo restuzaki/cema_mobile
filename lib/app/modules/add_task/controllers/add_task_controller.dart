@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../data/controllers/data_controller.dart';
-import '../../../data/models/project_model.dart';
+import '../../../data/model/task_model.dart';
 
 class AddTaskController extends GetxController {
   final DataController dataController = Get.find<DataController>();
@@ -115,19 +115,17 @@ class AddTaskController extends GetxController {
     isLoading.value = true;
 
     // Parse dates
-    final startDate = _parseDate(startDateController.text);
     final endDate = _parseDate(endDateController.text);
 
     // Create new task
     final newTask = TaskModel(
       id: 'task_${DateTime.now().millisecondsSinceEpoch}',
-      projectId: currentProject.id,
+      projectId: currentProject.id!,
       title: taskNameController.text,
       responsibleName: responsibleNameController.text,
       description: taskDescriptionController.text,
-      startDate: startDate,
       dueDate: endDate,
-      phase: currentProject.phase,
+      phase: 'Development',
       status: _mapStatusToInternal(selectedStatus.value),
     );
 
