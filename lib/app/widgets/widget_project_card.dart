@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../../data/models/project_model.dart';
-import '../../../design_system/design_system.dart';
-import 'widget_metric_pill.dart';
-import 'widget_status_badge.dart';
+import '../data/models/project_model.dart';
+import '../design_system/design_system.dart';
+import '../modules/project/widgets/widget_metric_pill.dart';
+import '../modules/project/widgets/widget_status_badge.dart';
 
 class WidgetProjectCard extends StatelessWidget {
   final Project project;
   final VoidCallback? onTap;
 
-  const WidgetProjectCard({super.key, required this.project, this.onTap});
+  final double? horizontalMargin;
+
+  const WidgetProjectCard({
+    super.key,
+    required this.project,
+    this.onTap,
+    this.horizontalMargin,
+  });
 
   BadgeStatus get _status {
     switch (project.status?.toUpperCase()) {
@@ -30,7 +37,7 @@ class WidgetProjectCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         margin: AppSpacing.symmetric(
-          horizontal: AppSpacing.xl,
+          horizontal: horizontalMargin ?? AppSpacing.xl,
           vertical: AppSpacing.xxs,
         ),
         padding: AppSpacing.all(AppSpacing.md),
