@@ -1,5 +1,7 @@
 import 'package:cema_mobile/app/modules/add_task/bindings/add_task_binding.dart';
 import 'package:cema_mobile/app/modules/add_task/views/add_task_view.dart';
+import 'package:cema_mobile/app/modules/add_expense/bindings/add_expense_binding.dart';
+import 'package:cema_mobile/app/modules/add_expense/views/add_expense_view.dart';
 import 'package:cema_mobile/app/modules/cs_support/bindings/cs_support_binding.dart';
 import 'package:cema_mobile/app/modules/cs_support/views/cs_support_view.dart';
 import 'package:cema_mobile/app/modules/forget_password/bindings/forget_password_binding.dart';
@@ -87,6 +89,11 @@ class AppPages {
       name: _Paths.TAMBAH_PROYEK,
       page: () => TambahProyekPage(),
       binding: TambahProyekBinding(),
+    ),
+    GetPage(
+      name: _Paths.TAMBAH_EXPENSE,
+      page: () => const AddExpenseView(),
+      binding: AddExpenseBinding(),
     ),
   ];
 }

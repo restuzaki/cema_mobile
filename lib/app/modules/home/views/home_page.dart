@@ -55,7 +55,7 @@ class HomePage extends GetView<HomeController> {
               icon: Icons.attach_money,
               onTap: () {
                 controller.toggleFab();
-                Get.toNamed('/tambah-proyek');
+                Get.toNamed('/tambah-expense');
               },
             ),
             SizedBox(height: AppSpacing.sm),
