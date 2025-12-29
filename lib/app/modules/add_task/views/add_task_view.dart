@@ -2,6 +2,11 @@ import 'package:cema_mobile/app/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/add_task_controller.dart';
+import '../../../widgets/widget_project_trigger.dart';
+import '../../../widgets/widget_input_field.dart';
+import '../../../widgets/widget_currency_input.dart';
+import '../../../widgets/widget_date_picker.dart';
+import '../../../design_system/widgets/custom_button.dart';
 
 class AddTaskView extends GetView<AddTaskController> {
   const AddTaskView({super.key});
@@ -10,143 +15,92 @@ class AddTaskView extends GetView<AddTaskController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.neutral100,
-      appBar: CustomHeader(title: 'Tambah Tugas'),
+      appBar: AppBar(
+        title: Text(
+          'Tambah Task',
+          style: AppTypography.headingMD.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textLight,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: AppColors.neutral100,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close, color: AppColors.textLight),
+          onPressed: controller.cancelAddTask,
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: AppSpacing.paddingMd,
+          padding: const EdgeInsets.all(24.0), // 24px spacing/padding
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: AppSpacing.sm),
-
-              // Detail Task Section
-              Text(
-                'Detail Task',
-                style: AppTypography.headingMD.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: AppSpacing.md),
-
-              // Nama Penanggung Jawab
-              CustomTextField(
-                label: 'Nama Penanggung Jawab',
-                placeholder: 'Text',
-                controller: controller.responsibleNameController,
-                prefixIcon: Icons.person_outline,
-              ),
-              SizedBox(height: AppSpacing.md),
-
-              // Nama Task
-              CustomTextField(
-                label: 'Nama Task',
-                placeholder: 'Text',
-                controller: controller.taskNameController,
-                prefixIcon: Icons.assignment_outlined,
-              ),
-              SizedBox(height: AppSpacing.md),
-
-              // Deskripsi Task
-              CustomTextField(
-                label: 'Deskripsi Task',
-                placeholder: 'Projek Berkah',
-                controller: controller.taskDescriptionController,
-                maxLines: 5,
-                minLines: 3,
-                prefixIcon: Icons.description_outlined,
-              ),
-              SizedBox(height: AppSpacing.md),
-
-              // Tanggal Mulai Task
-              CustomTextField(
-                label: 'Tanggal Mulai Task',
-                placeholder: '20/10/2021',
-                controller: controller.startDateController,
-                readOnly: true,
-                prefixIcon: Icons.calendar_today_outlined,
-                onTap: () => controller.selectStartDate(context),
-              ),
-              SizedBox(height: AppSpacing.md),
-
-              // Tanggal Selesai Task
-              CustomTextField(
-                label: 'Tanggal Selesai Task',
-                placeholder: '21/08/2023',
-                controller: controller.endDateController,
-                readOnly: true,
-                prefixIcon: Icons.calendar_today_outlined,
-                onTap: () => controller.selectEndDate(context),
-              ),
-              SizedBox(height: AppSpacing.md),
-
-              // Status Task
-              Text(
-                'Status Task',
-                style: AppTypography.bodySM.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textLight,
-                ),
-              ),
-              SizedBox(height: AppSpacing.xxs),
+              // Project Trigger
               Obx(
-                () => Container(
-                  padding: AppSpacing.paddingMd,
-                  decoration: BoxDecoration(
-                    color: AppColors.backgroundLight,
-                    borderRadius: AppRadius.radiusMd,
-                    border: Border.all(color: AppColors.dividerLight),
-                  ),
-                  child: DropdownButton<String>(
-                    value: controller.selectedStatus.value,
-                    isExpanded: true,
-                    underline: const SizedBox(),
-                    icon: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: AppColors.textSecondaryLight,
-                    ),
-                    items: controller.statusOptions.map((String status) {
-                      return DropdownMenuItem<String>(
-                        value: status,
-                        child: Text(status, style: AppTypography.bodyMD),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      if (newValue != null) {
-                        controller.selectStatus(newValue);
-                      }
-                    },
-                  ),
+                () => WidgetProjectTrigger(
+                  selectedProjectName: controller.selectedProject.value?.name,
+                  isLocked: controller.isProjectLocked.value,
+                  onTap: controller.selectProject,
                 ),
               ),
-              SizedBox(height: AppSpacing.xl),
 
-              // Action Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      text: 'Cancel',
-                      variant: ButtonVariant.secondary,
-                      size: ButtonSize.large,
-                      onPressed: controller.cancelAddTask,
-                    ),
-                  ),
-                  SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Obx(
-                      () => CustomButton(
-                        text: 'Confirm',
-                        variant: ButtonVariant.primary,
-                        size: ButtonSize.large,
-                        onPressed: controller.confirmAddTask,
-                        isLoading: controller.isLoading.value,
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 24),
+
+              // Task Name
+              WidgetInputField(
+                controller: controller.taskNameController,
+                label: "Nama Task",
+                hint: "Masukkan nama task",
               ),
-              SizedBox(height: AppSpacing.md),
+
+              const SizedBox(height: 24),
+
+              // Budget
+              WidgetCurrencyInput(
+                controller: controller.budgetAllocationController,
+                label: "Budget Teralokasi",
+                hint: "0",
+              ),
+
+              const SizedBox(height: 24),
+
+              // Due Date
+              Obx(
+                () => WidgetDatePicker(
+                  label: "Tenggat Waktu",
+                  selectedDate: controller.dueDate.value,
+                  onTap: () => controller.selectDueDate(context),
+                ),
+              ),
+
+              // Note: Member Picker and Attachment Slot skipped as per instruction.
             ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(24.0), // Consistent padding
+        decoration: BoxDecoration(
+          color: AppColors.neutral100,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              offset: const Offset(0, -4),
+              blurRadius: 16,
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: Obx(
+            () => CustomButton(
+              text: "Simpan Task",
+              isLoading: controller.isLoading.value,
+              onPressed: controller.confirmAddTask,
+              size: ButtonSize.large,
+              variant: ButtonVariant.primary,
+            ),
           ),
         ),
       ),
