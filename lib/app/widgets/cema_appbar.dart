@@ -107,3 +107,55 @@ class CemaAppBar extends StatelessWidget implements PreferredSizeWidget {
     return Size.fromHeight(totalHeight);
   }
 }
+
+class CemaHomeAppBar extends CemaAppBar {
+  final String imageUrl;
+  final VoidCallback? onAvatarClicked;
+
+  const CemaHomeAppBar({
+    super.key,
+    required super.title,
+    required super.subtitle,
+    this.imageUrl = "",
+    this.onAvatarClicked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CemaAppBar(
+      title: title,
+      subtitle: subtitle,
+      actions: [
+        GestureDetector(
+          onTap: () => Get.toNamed('/notification'),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF7AC943), width: 2),
+            ),
+            child: const Icon(
+              Icons.notifications_none,
+              size: 22,
+              color: Color(0xFF7AC943),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: onAvatarClicked,
+          child: CircleAvatar(
+            radius: 25,
+            backgroundColor: Colors.grey[200],
+            backgroundImage: imageUrl.isNotEmpty
+                ? NetworkImage(imageUrl)
+                : null,
+            child: imageUrl.isEmpty
+                ? const Icon(Icons.person, size: 35, color: Colors.grey)
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+}

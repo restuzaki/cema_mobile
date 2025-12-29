@@ -1,7 +1,7 @@
+import 'package:cema_mobile/app/design_system/tokens/dimensions.dart';
 import 'package:flutter/material.dart';
 import '../../../design_system/tokens/colors.dart';
 import '../../../design_system/tokens/typography.dart';
-import '../../../design_system/tokens/shadows.dart';
 
 class WidgetStatCard extends StatelessWidget {
   final String label;
@@ -17,43 +17,34 @@ class WidgetStatCard extends StatelessWidget {
     this.isTrendPositive = true,
   });
 
+  final TextStyle labelStyle = AppTypography.labelSmall;
+  final TextStyle valueStyle = AppTypography.bodyLG;
+  final TextStyle trendStyle = AppTypography.bodySM;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: AppSpacing.all(AppSpacing.sm),
         decoration: BoxDecoration(
           color: AppColors.neutral000,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.neutral300),
-          // boxShadow: [AppShadows.cardShadow], // Assuming AppShadows exists
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: AppTypography.labelSmall.copyWith(
-                color: AppColors.neutral700,
-                fontWeight: FontWeight.w500,
-              ),
+              style: labelStyle.copyWith(color: AppColors.neutral500),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: AppTypography.headingLG.copyWith(
-                // Reduced from XL to LG for better fit in row of 3
-                color: AppColors.neutral900,
-                fontSize: 20, // Override to fit constraints
-              ),
-            ),
+            Text(value, style: valueStyle),
             if (trend != null) ...[
-              const SizedBox(height: 4),
               Text(
                 trend!,
-                style: AppTypography.bodySM.copyWith(
+                style: trendStyle.copyWith(
                   color: isTrendPositive
                       ? AppColors.success700
                       : AppColors.error700,
@@ -65,5 +56,13 @@ class WidgetStatCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  double get height {
+    return AppTypography.labelSmall.fontSize! *
+            AppTypography.labelSmall.height! +
+        AppTypography.bodyLG.fontSize! * AppTypography.bodyLG.height! +
+        AppTypography.bodySM.fontSize! * AppTypography.bodySM.height! +
+        2 * AppSpacing.sm;
   }
 }

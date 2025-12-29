@@ -27,7 +27,7 @@ class AppTheme {
       ),
 
       // Shadow Color for Material components
-      shadowColor: AppColors.neutral900.withOpacity(0.1),
+      shadowColor: AppColors.neutral900.withValues(alpha: 0.1),
 
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
