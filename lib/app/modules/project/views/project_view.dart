@@ -29,11 +29,13 @@ class ProjectView extends GetView<ProjectController> {
                 flexibleSpace: FlexibleSpaceBar(
                   background: Padding(
                     padding: AppSpacing.only(bottom: AppSpacing.xxs),
-                    child: CemaHomeAppBar(
-                      title: controller.name.value,
-                      subtitle: controller.role.value,
-                      imageUrl: controller.profilePic.value,
-                      onAvatarClicked: onAvatarClicked,
+                    child: Obx(
+                      () => CemaHomeAppBar(
+                        title: controller.userName.value,
+                        subtitle: controller.userRole.value,
+                        imageUrl: controller.profilePic.value,
+                        onAvatarClicked: onAvatarClicked,
+                      ),
                     ),
                   ),
                 ),
@@ -223,8 +225,8 @@ class ProjectView extends GetView<ProjectController> {
 
   double _getAppBarHeight() {
     return CemaHomeAppBar(
-          title: controller.name.value,
-          subtitle: controller.role.value,
+          title: controller.userName.value,
+          subtitle: controller.userRole.value,
           imageUrl: controller.profilePic.value,
           onAvatarClicked: onAvatarClicked,
         ).preferredSize.height +

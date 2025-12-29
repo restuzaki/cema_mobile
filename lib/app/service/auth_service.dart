@@ -7,6 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AuthService {
   final String? baseUrl = dotenv.env['API_KEY'];
 
+  Map<String, String> _getHeaders(String? token) {
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
   Future<http.Response> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/login');
     return await http.post(
@@ -25,22 +33,19 @@ class AuthService {
     );
   }
 
-  Future<http.Response> register(
-    String name,
-    String phoneNumber,
-    String email,
-    String password,
+  Future<http.Response> updateUser(
+    String userId,
+    String token,
+    Map<String, dynamic> data,
   ) async {
-    final url = Uri.parse('$baseUrl/register');
-    return await http.post(
+    final url = Uri.parse("$baseUrl/users/$userId");
+
+    debugPrint("Updating user $userId with data: $data");
+
+    return await http.put(
       url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "name": name,
-        "phoneNumber": phoneNumber,
-        "email": email,
-        "password": password,
-      }),
+      headers: _getHeaders(token),
+      body: jsonEncode(data),
     );
   }
 
@@ -55,27 +60,7 @@ class AuthService {
     );
   }
 
-  Future<http.Response> updateUser(
-    String userId,
-    String token,
-    Map<String, dynamic> data,
-  ) async {
-    debugPrint("token: $token");
-    debugPrint(
-      "Updating user $userId with data: $data in $baseUrl/users/$userId",
-    );
-    final url = Uri.parse("$baseUrl/users/$userId");
-    return await http.put(
-      url,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-      body: jsonEncode(data),
-    );
-  }
-
-  Future<http.StreamedResponse> uploadFile(
+  Future<http.StreamedResponse> uploadProfilePicture(
     String userId,
     File imageFile,
     String token,
@@ -83,7 +68,10 @@ class AuthService {
     final url = Uri.parse("$baseUrl/users/$userId");
 
     var request = http.MultipartRequest('PUT', url);
-    request.headers['Authorization'] = 'Bearer $token';
+    request.headers.addAll({
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+    });
 
     request.files.add(
       await http.MultipartFile.fromPath('profilePicture', imageFile.path),

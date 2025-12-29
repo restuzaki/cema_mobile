@@ -1,8 +1,11 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/repositories/project_repository.dart';
+import '../../../service/auth_service.dart';
 import '../../../service/authenticated_client.dart';
+import '../../../service/storage_service.dart';
 
 class ProjectController extends GetxController {
   // Dependency Injection (could be abstracted further with Bindings)
@@ -11,15 +14,18 @@ class ProjectController extends GetxController {
   );
 
   final box = GetStorage();
+  final AuthService _authService = AuthService();
+
+  final StorageService _storageService = StorageService();
 
   // Observable Variables
   final RxBool isLoading = false.obs;
   final RxList<Project> projects = <Project>[].obs;
   final RxString errorMessage = ''.obs;
 
-  var name = ''.obs;
-  var role = ''.obs;
-  var profilePic = ''.obs;
+  var userName = "".obs;
+  var userRole = "".obs;
+  var profilePic = "".obs;
 
   @override
   void onInit() {
@@ -29,8 +35,8 @@ class ProjectController extends GetxController {
   }
 
   void getUserData() {
-    name.value = box.read('name');
-    role.value = box.read('role');
+    userName.value = box.read('name');
+    userRole.value = box.read('role');
     profilePic.value = box.read('profilePic') ?? "";
   }
 
@@ -45,6 +51,38 @@ class ProjectController extends GetxController {
       errorMessage.value = e.toString();
       // Optional: Show snackbar
       Get.snackbar('Error', 'Failed to fetch projects: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void fetchUserProfile() async {
+    try {
+      String? userId = box.read('userId');
+      String? token = await _storageService.getToken();
+
+      if (userId != null && token != null) {
+        isLoading.value = true;
+        final response = await _authService.getUserProfile(userId, token);
+
+        if (response.statusCode == 200) {
+          final responseData = jsonDecode(response.body);
+          final userData = responseData['data'];
+
+          userName.value = userData['name'] ?? "No Name";
+
+          String rawRole = userData['role'] ?? "client";
+          userRole.value = rawRole
+              .replaceAll('_', ' ')
+              .split(' ')
+              .map((str) => str.capitalize)
+              .join(' ');
+
+          profilePic.value = userData['profilePicture'] ?? "";
+        }
+      }
+    } catch (e) {
+      print("Error fetching profile: $e");
     } finally {
       isLoading.value = false;
     }
