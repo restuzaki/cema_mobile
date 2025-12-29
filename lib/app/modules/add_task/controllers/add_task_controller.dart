@@ -160,7 +160,6 @@ class AddTaskController extends GetxController {
     try {
       await taskRepository.createTask(newTaskMap);
       Get.back();
-      // Wait for snackbar to show?? Or show immediately.
       Get.snackbar('Sukses', 'Task berhasil disimpan (Online)');
     } catch (e) {
       if (e is OfflineSuccessException) {

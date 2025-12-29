@@ -2,9 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cema_mobile/app/modules/notification/notification_model.dart';
 import 'package:cema_mobile/app/modules/notification/controllers/notification_controller.dart';
-import '../widgets/notification_header.dart';
 import '../widgets/notification_card_pm.dart';
 import '../widgets/notification_card_staff.dart';
 
