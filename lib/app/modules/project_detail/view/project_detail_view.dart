@@ -6,7 +6,7 @@ import '../controller/project_detail_controller.dart';
 import '../tabs/task_tab_content.dart';
 import '../tabs/finance_tab_content.dart';
 
-class ProjectDetailView extends StatelessWidget {
+class ProjectDetailView extends StatelessWidget { 
   const ProjectDetailView({super.key});
 
   @override
@@ -48,10 +48,8 @@ class ProjectDetailView extends StatelessWidget {
           icon: Icons.add,
           onPressed: () {
             if (controller.mainTabIndex.value == 0) {
-              // Navigate to Add Task
               Get.toNamed(Routes.TAMBAH_TASK);
             } else {
-              // Navigate to Add Transaction (future implementation)
               Get.snackbar(
                 'Info',
                 'Tambah Transaksi akan segera hadir',
