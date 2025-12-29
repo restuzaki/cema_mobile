@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import '../../../design_system/tokens/colors.dart';
 import '../../../design_system/tokens/typography.dart';
 import '../controllers/project_controller.dart';
-import '../widgets/widget_project_card.dart';
+import '../../../widgets/widget_project_card.dart';
 import '../widgets/widget_stat_card.dart';
 
 class ProjectView extends GetView<ProjectController> {

@@ -1,14 +1,21 @@
 import 'dart:convert';
+import 'package:cema_mobile/app/data/repositories/project_repository.dart';
+import 'package:cema_mobile/app/service/authenticated_client.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../data/model/risk.dart';
+import '../../../data/models/project_model.dart';
 import '../../../service/auth_service.dart';
 import '../../../service/storage_service.dart';
 
 class DashboardController extends GetxController {
   final AuthService _authService = AuthService();
+  final ProjectRepository _projectRepository = ProjectRepository(
+    client: AuthenticatedClient(),
+  );
   final box = GetStorage();
   final StorageService _storageService = StorageService();
+
+  final RxList<Project> allProjects = <Project>[].obs;
 
   var userName = "".obs;
   var userRole = "".obs;
@@ -19,7 +26,23 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     getUserData();
+    getProjects();
     // fetchUserProfile();
+  }
+
+  void getProjects() {
+    isLoading.value = true;
+    _projectRepository
+        .getProjects()
+        .then((value) {
+          allProjects.assignAll(value);
+        })
+        .catchError((error) {
+          print(error);
+        })
+        .whenComplete(() {
+          isLoading.value = false;
+        });
   }
 
   void getUserData() {
@@ -79,62 +102,26 @@ class DashboardController extends GetxController {
     Get.snackbar("Info", "Tugas $taskId ditolak");
   }
 
-  final RxList<Project> allProjects = <Project>[
-    Project(
-      id: 'P001',
-      name: 'Project Alpha',
-      phase: 'Design',
-      cpi: 0.91,
-      spi: 1.1,
-      riskType: RiskType.berisiko,
-    ),
-    Project(
-      id: 'P002',
-      name: 'Project Beta',
-      phase: 'Development',
-      cpi: 0.8,
-      spi: 1.1,
-      riskType: RiskType.darurat,
-    ),
-    Project(
-      id: 'P003',
-      name: 'Project Gamma',
-      phase: 'Testing',
-      cpi: 1.05,
-      spi: 0.95,
-      riskType: RiskType.normal,
-    ),
-    Project(
-      id: 'P004',
-      name: 'Project Delta',
-      phase: 'Deployment',
-      cpi: 0.75,
-      spi: 0.8,
-      riskType: RiskType.darurat,
-    ),
-    Project(
-      id: 'P005',
-      name: 'Project Epsilon',
-      phase: 'Maintenance',
-      cpi: 0.98,
-      spi: 1.02,
-      riskType: RiskType.berisiko,
-    ),
-  ].obs;
-
   List<Project> get filteredProjects {
     switch (selectedRiskTabIndex.value) {
       case 1:
-        return allProjects
-            .where((p) => p.riskType == RiskType.darurat)
-            .toList();
+      // return allProjects
+      // .where((p) => p.riskType == RiskType.darurat)
+      // .toList();
       case 2:
-        return allProjects
-            .where((p) => p.riskType == RiskType.berisiko)
-            .toList();
+      // return allProjects
+      // .where((p) => p.riskType == RiskType.berisiko)
+      // .toList();
       case 0:
       default:
         return allProjects;
     }
   }
+
+  List<Project> get limitedFilteredProjects {
+    final filtered = filteredProjects;
+    return filtered.length > 3 ? filtered.take(3).toList() : filtered;
+  }
+
+  bool get hasMoreProjects => filteredProjects.length > 3;
 }

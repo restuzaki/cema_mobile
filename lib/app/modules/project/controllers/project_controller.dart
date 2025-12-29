@@ -9,6 +9,7 @@ import '../../../data/repositories/project_repository.dart';
 import '../../../service/auth_service.dart';
 import '../../../service/authenticated_client.dart';
 import '../../../service/storage_service.dart';
+import '../../../core/exceptions/offline_success_exception.dart';
 
 class ProjectController extends GetxController {
   // Dependency Injection (could be abstracted further with Bindings)
