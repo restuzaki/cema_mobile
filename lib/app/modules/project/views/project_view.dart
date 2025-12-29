@@ -129,21 +129,27 @@ class ProjectView extends GetView<ProjectController> {
             () => Row(
               spacing: AppSpacing.sm,
               children: [
-                WidgetStatCard(
-                  label: 'Total',
-                  value: controller.totalProjects.toString(),
-                  trend: '+2 New',
-                  isTrendPositive: true,
+                Expanded(
+                  child: WidgetStatCard(
+                    label: 'Total',
+                    value: controller.totalProjects.toString(),
+                    trend: '+2 New',
+                    isTrendPositive: true,
+                  ),
                 ),
-                WidgetStatCard(
-                  label: 'Active',
-                  value: controller.activeProjects.toString(),
-                  trend: 'On Track',
+                Expanded(
+                  child: WidgetStatCard(
+                    label: 'Active',
+                    value: controller.activeProjects.toString(),
+                    trend: 'On Track',
+                  ),
                 ),
-                WidgetStatCard(
-                  label: 'Done',
-                  value: controller.completedProjects.toString(),
-                  trend: 'Last 30d',
+                Expanded(
+                  child: WidgetStatCard(
+                    label: 'Done',
+                    value: controller.completedProjects.toString(),
+                    trend: 'Last 30d',
+                  ),
                 ),
               ],
             ),
@@ -230,20 +236,20 @@ class ProjectView extends GetView<ProjectController> {
           imageUrl: controller.profilePic.value,
           onAvatarClicked: onAvatarClicked,
         ).preferredSize.height +
-        2 * AppSpacing.md;
+        AppSpacing.xxs;
   }
 
   double _getStatsRowHeight() {
     return AppTypography.headingMD.fontSize! * AppTypography.headingMD.height! +
         2 * AppSpacing.md +
         AppSpacing.xl +
-        WidgetStatCard(label: "", value: "").height;
+        WidgetStatCard.height;
   }
 
   double _getTabFiltersHeight() {
     return AppTypography.headingMD.fontSize! * AppTypography.headingMD.height! +
         3 * AppSpacing.md +
         8 +
-        AppSpacing.xl;
+        AppSpacing.lg;
   }
 }

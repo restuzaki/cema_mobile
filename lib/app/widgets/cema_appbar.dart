@@ -150,8 +150,8 @@ class CemaHomeAppBar extends CemaAppBar {
             backgroundColor: Colors.grey[200],
             backgroundImage: imageUrl.isNotEmpty
                 ? (imageUrl.startsWith('http')
-                    ? NetworkImage(imageUrl)
-                    : MemoryImage(base64Decode(imageUrl)) as ImageProvider)
+                      ? NetworkImage(imageUrl)
+                      : MemoryImage(base64Decode(imageUrl)) as ImageProvider)
                 : null,
             child: imageUrl.isEmpty
                 ? const Icon(Icons.person, size: 35, color: Colors.grey)
@@ -160,5 +160,26 @@ class CemaHomeAppBar extends CemaAppBar {
         ),
       ],
     );
+  }
+
+  static Size get preferredHeight {
+    final double titleHeight =
+        (CemaAppBar._titleStyle.fontSize ?? 18) *
+        (CemaAppBar._titleStyle.height ?? 1.2);
+
+    double subtitleHeight =
+        (CemaAppBar._subtitleStyle.fontSize ?? 12) *
+        (CemaAppBar._subtitleStyle.height ?? 1.2);
+    subtitleHeight += CemaAppBar._gapBetweenText;
+
+    final double textContentHeight = titleHeight + subtitleHeight;
+
+    final double contentHeight = textContentHeight > kToolbarHeight
+        ? textContentHeight
+        : kToolbarHeight;
+
+    final double totalHeight = contentHeight + (AppSpacing.md * 2);
+
+    return Size.fromHeight(totalHeight);
   }
 }

@@ -23,42 +23,40 @@ class WidgetStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: AppSpacing.all(AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: AppColors.neutral000,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.neutral300),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Container(
+      padding: AppSpacing.all(AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.neutral000,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.neutral300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: labelStyle.copyWith(color: AppColors.neutral500),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(value, style: valueStyle),
+          if (trend != null) ...[
             Text(
-              label,
-              style: labelStyle.copyWith(color: AppColors.neutral500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(value, style: valueStyle),
-            if (trend != null) ...[
-              Text(
-                trend!,
-                style: trendStyle.copyWith(
-                  color: isTrendPositive
-                      ? AppColors.success700
-                      : AppColors.error700,
-                  fontSize: 10,
-                ),
+              trend!,
+              style: trendStyle.copyWith(
+                color: isTrendPositive
+                    ? AppColors.success700
+                    : AppColors.error700,
+                fontSize: 10,
               ),
-            ],
+            ),
           ],
-        ),
+        ],
       ),
     );
   }
 
-  double get height {
+  static double get height {
     return AppTypography.labelSmall.fontSize! *
             AppTypography.labelSmall.height! +
         AppTypography.bodyLG.fontSize! * AppTypography.bodyLG.height! +

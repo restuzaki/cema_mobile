@@ -49,7 +49,7 @@ class DashboardView extends GetView<DashboardController> {
 
   PreferredSizeWidget _buildAppBar() {
     return PreferredSize(
-      preferredSize: const Size.fromHeight(88.0),
+      preferredSize: CemaHomeAppBar.preferredHeight,
       child: Obx(
         () => CemaHomeAppBar(
           title: controller.userName.value,
