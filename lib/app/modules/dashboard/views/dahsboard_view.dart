@@ -389,10 +389,7 @@ class DashboardView extends GetView<DashboardController> {
           return WidgetProjectCard(
             project: project,
             horizontalMargin: 0,
-            onTap: () => Get.toNamed(
-              '/project-details',
-              arguments: {'project': controller.filteredProjects[index]},
-            ),
+            onTap: () => controller.navigateToDetail(project),
           );
         },
       ),

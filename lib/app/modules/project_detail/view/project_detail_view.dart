@@ -20,7 +20,7 @@ class ProjectDetailView extends StatelessWidget {
         preferredSize: const Size.fromHeight(130),
         child: Obx(
           () => CustomHeader(
-            title: controller.currentProject?.name ?? 'Project Name',
+            title: controller.currentProject.value?.name ?? 'Project Name',
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

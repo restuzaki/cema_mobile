@@ -33,9 +33,7 @@ class ExpenseRepository {
     // 1. Try Network First
     try {
       if (await _isOnline()) {
-        final uri = Uri.parse('$_baseUrl/expenses').replace(
-          queryParameters: {if (projectId != null) 'project_id': projectId},
-        );
+        final uri = Uri.parse('$_baseUrl/expenses/project/$projectId');
 
         final response = await client.get(uri);
 
@@ -87,7 +85,6 @@ class ExpenseRepository {
     await _handleWriteAction(
       type:
           'CREATE_EXPENSE', // Distinct type for queue processor if needed, or reuse 'CREATE' if generic
-
       // However, project_repo uses 'CREATE' which implies Project.
       // We should probably share the queue but differentiate resource type if the queue processor is shared.
       // Looking at ProjectRepository, it processes 'CREATE' as /projects.

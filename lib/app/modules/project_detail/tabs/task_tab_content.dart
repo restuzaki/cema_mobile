@@ -90,7 +90,7 @@ class TaskTabContent extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      task.title,
+                                      task.title ?? 'Untitled',
                                       style: AppTypography.headingMD.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -106,7 +106,7 @@ class TaskTabContent extends StatelessWidget {
                                       ),
                                       SizedBox(width: AppSpacing.xxs),
                                       Text(
-                                        _getStatusLabel(task.status),
+                                        _getStatusLabel(task.status ?? 'TODO'),
                                         style: AppTypography.bodySM.copyWith(
                                           color: AppColors.textSecondaryLight,
                                         ),
@@ -133,7 +133,9 @@ class TaskTabContent extends StatelessWidget {
                                       ),
                                       SizedBox(height: AppSpacing.xxs),
                                       Text(
-                                        _formatDate(task.dueDate),
+                                        _formatDate(
+                                          task.dueDate ?? DateTime.now(),
+                                        ),
                                         style: AppTypography.bodySM.copyWith(
                                           color: AppColors.textLight,
                                           fontWeight: FontWeight.w500,
@@ -165,18 +167,14 @@ class TaskTabContent extends StatelessWidget {
 
   String _getStatusLabel(String status) {
     switch (status) {
-      case 'ongoing':
-        return 'Berlangsung';
-
-      case 'late':
-        return 'Terlambat';
-
-      case 'done':
-        return 'Selesai';
-
-      case 'menunggu':
+      case 'TODO':
         return 'Menunggu';
-
+      case 'IN_PROGRESS':
+        return 'Berlangsung';
+      case 'IN_REVIEW':
+        return 'Review';
+      case 'DONE':
+        return 'Selesai';
       default:
         return status;
     }
