@@ -1,12 +1,15 @@
 import 'package:cema_mobile/app/modules/dashboard/controllers/dashboard_controller.dart';
 import 'package:cema_mobile/app/modules/project_detail/view/project_detail_view.dart';
+import 'package:cema_mobile/app/widgets/cema_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../data/model/risk.dart';
 
 class DashboardView extends GetView<DashboardController> {
-  const DashboardView({super.key});
+  final VoidCallback? onAvatarClicked;
+
+  const DashboardView({super.key, this.onAvatarClicked});
 
   @override
   Widget build(BuildContext context) {
@@ -45,78 +48,16 @@ class DashboardView extends GetView<DashboardController> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      toolbarHeight: 80,
-      backgroundColor: Colors.white,
-      automaticallyImplyLeading: false,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
-      elevation: 0,
-      title: Obx(() {
-        if (controller.isLoading.value) {
-          return const SizedBox(
-            height: 20, 
-            width: 20, 
-            child: CircularProgressIndicator(strokeWidth: 2)
-          );
-        }
-        return Row(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  controller.userName.value,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25,
-                  ),
-                ),
-                Text(
-                  controller.userRole.value,
-                  style: const TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-              ],
-            ),
-          ],
-        );
-      }),
-      actions: [
-        GestureDetector(
-          onTap: () => Get.toNamed('/notification'),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF7AC943), width: 2),
-            ),
-            child: const Icon(
-              Icons.notifications_none,
-              size: 22,
-              color: Color(0xFF7AC943),
-            ),
-          ),
+    return PreferredSize(
+      preferredSize: CemaHomeAppBar.preferredHeight,
+      child: Obx(
+        () => CemaHomeAppBar(
+          title: controller.userName.value,
+          subtitle: controller.userRole.value,
+          imageUrl: controller.profilePic.value,
+          onAvatarClicked: onAvatarClicked,
         ),
-        const SizedBox(width: 10),
-
-        Obx(() {
-          String imageUrl = controller.profilePic.value;
-
-          return CircleAvatar(
-            radius: 25,
-            backgroundColor: Colors.grey[200],
-            backgroundImage: imageUrl.isNotEmpty
-                ? NetworkImage(imageUrl)
-                : null,
-            child: imageUrl.isEmpty
-                ? const Icon(Icons.person, size: 35, color: Colors.grey)
-                : null,
-          );
-        }),
-        const SizedBox(width: 5),
-      ],
+      ),
     );
   }
 

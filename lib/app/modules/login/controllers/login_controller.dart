@@ -42,8 +42,10 @@ class LoginController extends GetxController {
         debugPrint("Token saved successfully ${data['data']['token']}");
 
         // Save other non-sensitive data
-        box.write('role', data['data']['user']['role']);
         box.write('userId', data['data']['user']['_id']);
+        box.write('name', data['data']['user']['name']);
+        box.write('role', data['data']['user']['role']);
+        box.write('profilePic', data['data']['user']['profilePicture']);
 
         debugPrint("Role saved successfully ${data['data']['user']['role']}");
         debugPrint("User ID saved successfully ${data['data']['user']['_id']}");

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:cema_mobile/app/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -95,6 +96,81 @@ class CemaAppBar extends StatelessWidget implements PreferredSizeWidget {
           (_subtitleStyle.fontSize ?? 12) * (_subtitleStyle.height ?? 1.2);
       subtitleHeight += _gapBetweenText;
     }
+
+    final double textContentHeight = titleHeight + subtitleHeight;
+
+    final double contentHeight = textContentHeight > kToolbarHeight
+        ? textContentHeight
+        : kToolbarHeight;
+
+    final double totalHeight = contentHeight + (AppSpacing.md * 2);
+
+    return Size.fromHeight(totalHeight);
+  }
+}
+
+class CemaHomeAppBar extends CemaAppBar {
+  final String imageUrl;
+  final VoidCallback? onAvatarClicked;
+
+  const CemaHomeAppBar({
+    super.key,
+    required super.title,
+    required super.subtitle,
+    this.imageUrl = "",
+    this.onAvatarClicked,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CemaAppBar(
+      title: title,
+      subtitle: subtitle,
+      actions: [
+        GestureDetector(
+          onTap: () => Get.toNamed('/notification'),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF7AC943), width: 2),
+            ),
+            child: const Icon(
+              Icons.notifications_none,
+              size: 22,
+              color: Color(0xFF7AC943),
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: onAvatarClicked,
+          child: CircleAvatar(
+            radius: 25,
+            backgroundColor: Colors.grey[200],
+            backgroundImage: imageUrl.isNotEmpty
+                ? (imageUrl.startsWith('http')
+                      ? NetworkImage(imageUrl)
+                      : MemoryImage(base64Decode(imageUrl)) as ImageProvider)
+                : null,
+            child: imageUrl.isEmpty
+                ? const Icon(Icons.person, size: 35, color: Colors.grey)
+                : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  static Size get preferredHeight {
+    final double titleHeight =
+        (CemaAppBar._titleStyle.fontSize ?? 18) *
+        (CemaAppBar._titleStyle.height ?? 1.2);
+
+    double subtitleHeight =
+        (CemaAppBar._subtitleStyle.fontSize ?? 12) *
+        (CemaAppBar._subtitleStyle.height ?? 1.2);
+    subtitleHeight += CemaAppBar._gapBetweenText;
 
     final double textContentHeight = titleHeight + subtitleHeight;
 

@@ -2,21 +2,13 @@ import 'package:cema_mobile/app/modules/add_task/bindings/add_task_binding.dart'
 import 'package:cema_mobile/app/modules/add_task/views/add_task_view.dart';
 import 'package:cema_mobile/app/modules/cs_support/bindings/cs_support_binding.dart';
 import 'package:cema_mobile/app/modules/cs_support/views/cs_support_view.dart';
-import 'package:cema_mobile/app/modules/dashboard/bindings/dashboard_binding.dart';
-import 'package:cema_mobile/app/modules/dashboard/views/dahsboard_view.dart';
 import 'package:cema_mobile/app/modules/forget_password/bindings/forget_password_binding.dart';
 import 'package:cema_mobile/app/modules/forget_password/views/forget_password_view.dart';
-import 'package:cema_mobile/app/modules/home/views/home_navbar.dart';
+import 'package:cema_mobile/app/modules/home/views/home_page.dart';
 import 'package:cema_mobile/app/modules/login/bindings/login_binding.dart';
 import 'package:cema_mobile/app/modules/login/views/login_view.dart';
 import 'package:cema_mobile/app/modules/privacy_and_policy/bindings/privacy_and_policy_binding.dart';
 import 'package:cema_mobile/app/modules/privacy_and_policy/views/privacy_and_policy_view.dart';
-import 'package:cema_mobile/app/modules/profile/bindings/profile_binding.dart';
-import 'package:cema_mobile/app/modules/profile/views/profile_view.dart';
-import 'package:cema_mobile/app/modules/project/bindings/project_binding.dart';
-import 'package:cema_mobile/app/modules/project/views/project_view.dart';
-import 'package:cema_mobile/app/modules/register/bindings/register_binding.dart';
-import 'package:cema_mobile/app/modules/register/views/register_view.dart';
 import 'package:cema_mobile/app/modules/update_profile/bindings/update_profile_binding.dart';
 import 'package:cema_mobile/app/modules/update_profile/views/update_profile_view.dart';
 import 'package:cema_mobile/app/modules/task_manager/bindings/task_manager_binding.dart';
@@ -52,21 +44,6 @@ class AppPages {
       binding: ForgetPasswordBinding(),
     ),
     GetPage(
-      name: _Paths.REGISTER,
-      page: () => const RegisterView(),
-      binding: RegisterBinding(),
-    ),
-    GetPage(
-      name: _Paths.DASHBOARD,
-      page: () => const DashboardView(),
-      binding: DashboardBinding(),
-    ),
-    GetPage(
-      name: _Paths.PROFILE,
-      page: () => ProfilePage(),
-      binding: ProfileBinding(),
-    ),
-    GetPage(
       name: _Paths.PRIVACYANDPOLICY,
       page: () => PrivacyPolicyPage(),
       binding: PrivacyAndPolicyBinding(),
@@ -95,11 +72,6 @@ class AppPages {
       name: _Paths.TAMBAHPROYEK,
       page: () => TambahProyekPage(),
       binding: TambahProyekBinding(),
-    ),
-    GetPage(
-      name: _Paths.PROJECT,
-      page: () => ProjectView(),
-      binding: ProjectBinding(),
     ),
     GetPage(
       name: _Paths.PROJECT_DETAILS,

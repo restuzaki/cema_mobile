@@ -10,15 +10,22 @@ class DashboardController extends GetxController {
   final box = GetStorage();
   final StorageService _storageService = StorageService();
 
-  var userName = "Loading...".obs;
-  var userRole = "Guest".obs;
+  var userName = "".obs;
+  var userRole = "".obs;
   var profilePic = "".obs;
   var isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    fetchUserProfile();
+    getUserData();
+    // fetchUserProfile();
+  }
+
+  void getUserData() {
+    userName.value = box.read('name');
+    userRole.value = box.read('role');
+    profilePic.value = box.read('profilePic') ?? "";
   }
 
   void fetchUserProfile() async {

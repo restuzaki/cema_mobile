@@ -27,17 +27,16 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 🔔 Initialize NotificationService
+  // Initialize NotificationService
   final NotificationService notificationService = NotificationService();
 
-  // 🔔 Request Permission immediately on startup
-  print('🚀 FCM_DEBUG: Starting FCM initialization...');
+  // Request Permission immediately on startup
   await notificationService.requestPermission();
 
-  // 🔔 Get token with enhanced debugging
+  // Get token with enhanced debugging
   await notificationService.getTokenWithDebug();
 
-  // 🔔 Setup token refresh listener to catch token updates
+  // Setup token refresh listener to catch token updates
   notificationService.setupTokenRefreshListener();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);

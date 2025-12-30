@@ -17,7 +17,7 @@ class LoginView extends GetView<LoginController> {
           Image.asset(
             'assets/images/image_ruangan.png',
             fit: BoxFit.fill,
-            height: 248,
+            height: 300,
             width: 400,
           ),
 
@@ -31,7 +31,7 @@ class LoginView extends GetView<LoginController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 170),
+                    const SizedBox(height: 250),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -103,38 +103,6 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => controller.login(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6FB327),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Obx(
-                          () => controller.isLoading.value
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ),
                     const SizedBox(height: 3),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -161,100 +129,135 @@ class LoginView extends GetView<LoginController> {
                             ],
                           ),
                         ),
-                        TextButton(
-                          onPressed: controller.forgotPassword,
-                          child: const Text(
-                            "Forget Password?",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        // TextButton(
+                        //   onPressed: controller.forgotPassword,
+                        //   child: const Text(
+                        //     "Forget Password?",
+                        //     style: TextStyle(
+                        //       color: Colors.black,
+                        //       fontWeight: FontWeight.bold,
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Divider(
-                            thickness: 1,
-                            color: Color(0xFF6FB327),
+                    const SizedBox(height: 3),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => controller.login(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6FB327),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: Text(
-                            "Or",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            thickness: 1,
-                            color: Color(0xFF6FB327),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: () => controller.loginWithGoogle(),
-                          icon: Obx(
-                            () => controller.isLoading.value
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Image.asset(
-                                    'assets/images/logo_google.png',
-                                    height: 35,
+
+                        child: Obx(
+                          () => controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
                                   ),
-                          ),
+                                )
+                              : const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
                         ),
-                        const SizedBox(width: 15),
-                        IconButton(
-                          onPressed: () {},
-                          icon: Image.asset(
-                            'assets/images/logo_facebook.png',
-                            height: 35,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Don’t have an account? ",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: Color(0xFFD9D9D9),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: controller.signUp,
-                          child: const Text(
-                            "Sign Up",
-                            style: TextStyle(
-                              color: Color(0xFF6FB327),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
 
+                    // const SizedBox(height: 8),
+                    // Row(
+                    //   children: const [
+                    //     Expanded(
+                    //       child: Divider(
+                    //         thickness: 1,
+                    //         color: Color(0xFF6FB327),
+                    //       ),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.symmetric(horizontal: 8),
+                    //       child: Text(
+                    //         "Or",
+                    //         style: TextStyle(fontWeight: FontWeight.bold),
+                    //       ),
+                    //     ),
+                    //     Expanded(
+                    //       child: Divider(
+                    //         thickness: 1,
+                    //         color: Color(0xFF6FB327),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+                    // const SizedBox(height: 15),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     IconButton(
+                    //       onPressed: () => controller.loginWithGoogle(),
+                    //       icon: Obx(
+                    //         () => controller.isLoading.value
+                    //             ? const SizedBox(
+                    //                 height: 20,
+                    //                 width: 20,
+                    //                 child: CircularProgressIndicator(
+                    //                   strokeWidth: 2,
+                    //                 ),
+                    //               )
+                    //             : Image.asset(
+                    //                 'assets/images/logo_google.png',
+                    //                 height: 35,
+                    //               ),
+                    //       ),
+                    //     ),
+                    //     const SizedBox(width: 15),
+                    //     IconButton(
+                    //       onPressed: () {},
+                    //       icon: Image.asset(
+                    //         'assets/images/logo_facebook.png',
+                    //         height: 35,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
+
+                    // const SizedBox(height: 10),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     const Text(
+                    //       "Don’t have an account? ",
+                    //       style: TextStyle(
+                    //         fontWeight: FontWeight.bold,
+                    //         fontSize: 12,
+                    //         color: Color(0xFFD9D9D9),
+                    //       ),
+                    //     ),
+                    //     GestureDetector(
+                    //       onTap: controller.signUp,
+                    //       child: const Text(
+                    //         "Sign Up",
+                    //         style: TextStyle(
+                    //           color: Color(0xFF6FB327),
+                    //           fontSize: 12,
+                    //           fontWeight: FontWeight.bold,
+                    //           fontStyle: FontStyle.italic,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                     const SizedBox(height: 20),
                   ],
                 ),
