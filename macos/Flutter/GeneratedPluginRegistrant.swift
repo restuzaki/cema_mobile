@@ -5,7 +5,11 @@
 import FlutterMacOS
 import Foundation
 
+<<<<<<< HEAD
 import cloud_firestore
+=======
+import connectivity_plus
+>>>>>>> d337284ff70f1b2e3378fcbf4cfbf4fea2ddaff3
 import file_selector_macos
 import firebase_auth
 import firebase_core
@@ -18,7 +22,11 @@ import share_plus
 import webview_flutter_wkwebview
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+<<<<<<< HEAD
   FLTFirebaseFirestorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseFirestorePlugin"))
+=======
+  ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
+>>>>>>> d337284ff70f1b2e3378fcbf4cfbf4fea2ddaff3
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
   FLTFirebaseAuthPlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseAuthPlugin"))
   FLTFirebaseCorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseCorePlugin"))

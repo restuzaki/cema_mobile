@@ -1,4 +1,3 @@
-// lib/app/modules/project_detail/views/widgets/finance_tab_content.dart
 import 'package:cema_mobile/app/design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -131,8 +130,8 @@ class FinanceTabContent extends StatelessWidget {
                         padding: EdgeInsets.only(right: AppSpacing.md),
                         child: CustomFilter(
                           label: labels[i],
-                          isActive: controller.expenseFilterIndex.value == i,
-                          onTap: () => controller.changeExpenseFilter(i),
+                          isActive: controller.financeFilterIndex.value == i,
+                          onTap: () => controller.changeFinanceFilter(i),
                         ),
                       );
                     }),

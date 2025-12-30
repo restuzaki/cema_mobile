@@ -1,17 +1,23 @@
 import 'dart:convert';
+import 'dart:async';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../data/controllers/data_controller.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/repositories/project_repository.dart';
 import '../../../service/auth_service.dart';
 import '../../../service/authenticated_client.dart';
 import '../../../service/storage_service.dart';
+import '../../../core/exceptions/offline_success_exception.dart';
 
 class ProjectController extends GetxController {
   // Dependency Injection (could be abstracted further with Bindings)
   final ProjectRepository _repository = ProjectRepository(
     client: AuthenticatedClient(),
   );
+
+  StreamSubscription? _connectivitySubscription;
 
   final box = GetStorage();
   final AuthService _authService = AuthService();
@@ -32,6 +38,27 @@ class ProjectController extends GetxController {
     super.onInit();
     getUserData();
     fetchProjects();
+
+    // Listen to network changes
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((
+      result,
+    ) {
+      final isOnline = !result.contains(ConnectivityResult.none);
+
+      if (isOnline) {
+        // print("Network restored: Syncing...");
+        _repository.syncPendingActions().then((_) {
+          // Optional: trigger a UI refresh of the list if sync brought new real IDs
+          fetchProjects();
+        });
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    _connectivitySubscription?.cancel();
+    super.onClose();
   }
 
   void getUserData() {
@@ -40,7 +67,7 @@ class ProjectController extends GetxController {
     profilePic.value = box.read('profilePic') ?? "";
   }
 
-  Future<void> fetchProjects() async {
+  void fetchProjects() async {
     try {
       isLoading.value = true;
       errorMessage.value = '';
@@ -50,7 +77,34 @@ class ProjectController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       // Optional: Show snackbar
-      Get.snackbar('Error', 'Failed to fetch projects: $e');
+      // Get.snackbar('Error', 'Failed to fetch projects: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Create a new project (Handles Offline & Online)
+  Future<void> createProject(Map<String, dynamic> projectData) async {
+    try {
+      isLoading.value = true;
+      await _repository.createProject(projectData);
+
+      // If success (Online)
+      Get.back(); // Close dialog/page
+      Get.snackbar("Success", "Project Created!");
+
+      // Refresh list
+      fetchProjects();
+    } catch (e) {
+      if (e is OfflineSuccessException) {
+        Get.back();
+        Get.snackbar("Offline", e.message);
+        // We could manually insert a "fake" project into `projects` here for immediate feedback,
+        // but simple list refresh might pick up local cache if we updated it in repo.
+        // For now, the prompt expects just the snackbar.
+      } else {
+        Get.snackbar("Error", "Failed to create project: $e");
+      }
     } finally {
       isLoading.value = false;
     }
@@ -119,7 +173,15 @@ class ProjectController extends GetxController {
     }
   }
 
+  final DataController _dataController = Get.find<DataController>();
+
   void changeTab(int index) {
     currentTab.value = index;
+  }
+
+  void navigateToDetail(Project project) async {
+    _dataController.selectProject(project);
+    await Get.toNamed('/project-details', arguments: {'project': project});
+    fetchProjects(); // Refresh list on return
   }
 }

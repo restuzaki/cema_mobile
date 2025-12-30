@@ -127,13 +127,17 @@ class TaskManagerPage extends GetView<TaskManagerController> {
                       child: GestureDetector(
                         onTap: () => controller.goToProjectDetail(project),
                         child: _projectCard(
-                          title: project.name,
-                          phase: project.phase,
-                          client: project.client,
-                          badge: _getStatusBadge(project.status),
-                          badgeColor: _getStatusColor(project.status),
-                          cpi: project.cpi.toStringAsFixed(2),
-                          spi: project.spi.toStringAsFixed(2),
+                          title: project.name ?? '',
+                          phase: 'Development', // Missing in Project model
+                          client: project.clientName ?? '',
+                          badge: _getStatusBadge(project.status ?? ''),
+                          badgeColor: _getStatusColor(project.status ?? ''),
+                          cpi: (project.financials?.cpi ?? 0).toStringAsFixed(
+                            2,
+                          ),
+                          spi: (project.financials?.spi ?? 0).toStringAsFixed(
+                            2,
+                          ),
                           onTap: () => controller.goToProjectDetail(project),
                         ),
                       ),

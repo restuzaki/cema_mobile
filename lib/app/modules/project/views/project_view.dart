@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import '../../../design_system/tokens/colors.dart';
 import '../../../design_system/tokens/typography.dart';
 import '../controllers/project_controller.dart';
-import '../widgets/widget_project_card.dart';
+import '../../../widgets/widget_project_card.dart';
 import '../widgets/widget_stat_card.dart';
 
 class ProjectView extends GetView<ProjectController> {
@@ -17,8 +17,12 @@ class ProjectView extends GetView<ProjectController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
-      body: Obx(
-        () => SafeArea(
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return SafeArea(
           child: CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -77,17 +81,10 @@ class ProjectView extends GetView<ProjectController> {
                 delegate: SliverChildBuilderDelegate(
                   childCount: controller.filteredProjects.length,
                   (context, index) {
-                    if (controller.isLoading.value) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-
                     return WidgetProjectCard(
                       project: controller.filteredProjects[index],
-                      onTap: () => Get.toNamed(
-                        '/project-details',
-                        arguments: {
-                          'project': controller.filteredProjects[index],
-                        },
+                      onTap: () => controller.navigateToDetail(
+                        controller.filteredProjects[index],
                       ),
                     );
                   },
@@ -97,8 +94,8 @@ class ProjectView extends GetView<ProjectController> {
               SliverToBoxAdapter(child: SizedBox(height: 96)),
             ],
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 

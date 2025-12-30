@@ -3,7 +3,11 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+<<<<<<< HEAD
   cloud_firestore
+=======
+  connectivity_plus
+>>>>>>> d337284ff70f1b2e3378fcbf4cfbf4fea2ddaff3
   file_selector_windows
   firebase_auth
   firebase_core
