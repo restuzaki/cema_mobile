@@ -158,27 +158,27 @@ class FinanceTabContent extends StatelessWidget {
                 }
                 return Column(
                   children: expenses.map((expense) {
-                    final isPending = expense.status == 'pending';
+                    final isPending = (expense.status ?? '') == 'PENDING';
                     return Padding(
                       padding: EdgeInsets.only(bottom: AppSpacing.sm),
                       child: ExpenseCard(
-                        amount: _formatCurrency(expense.amount),
-                        description: expense.description,
-                        status: expense.status,
+                        amount: _formatCurrency(expense.amount.toDouble()),
+                        description: expense.title,
+                        status: expense.status ?? 'PENDING',
                         statusLabel: StatusLabel(
                           label: isPending
                               ? 'Menunggu Persetujuan'
-                              : expense.status == 'approved'
+                              : (expense.status ?? '') == 'APPROVED'
                               ? 'Disetujui'
                               : 'Ditolak',
                           type: isPending
                               ? StatusLabelType.warning
-                              : expense.status == 'approved'
+                              : (expense.status ?? '') == 'APPROVED'
                               ? StatusLabelType.success
                               : StatusLabelType.error,
                           icon: isPending
                               ? Icons.warning_amber
-                              : expense.status == 'approved'
+                              : (expense.status ?? '') == 'APPROVED'
                               ? Icons.check_circle
                               : Icons.cancel,
                         ),
@@ -208,16 +208,18 @@ class FinanceTabContent extends StatelessWidget {
                                   text: 'Accept',
                                   size: ButtonSize.small,
                                   variant: ButtonVariant.primary,
-                                  onPressed: () =>
-                                      controller.acceptExpense(expense.id),
+                                  onPressed: () => controller.acceptExpense(
+                                    expense.id ?? '',
+                                  ),
                                 ),
                                 SizedBox(width: AppSpacing.xs),
                                 CustomButton(
                                   text: 'Reject',
                                   size: ButtonSize.small,
                                   variant: ButtonVariant.danger,
-                                  onPressed: () =>
-                                      controller.rejectExpense(expense.id),
+                                  onPressed: () => controller.rejectExpense(
+                                    expense.id ?? '',
+                                  ),
                                 ),
                               ]
                             : [

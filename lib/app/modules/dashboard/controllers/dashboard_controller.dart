@@ -21,28 +21,14 @@ class DashboardController extends GetxController {
   var userRole = "".obs;
   var profilePic = "".obs;
   var isLoading = false.obs;
+  var errorMessage = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
     getUserData();
-    getProjects();
+    fetchProjects();
     // fetchUserProfile();
-  }
-
-  void getProjects() {
-    isLoading.value = true;
-    _projectRepository
-        .getProjects()
-        .then((value) {
-          allProjects.assignAll(value);
-        })
-        .catchError((error) {
-          print(error);
-        })
-        .whenComplete(() {
-          isLoading.value = false;
-        });
   }
 
   void getUserData() {
@@ -124,4 +110,24 @@ class DashboardController extends GetxController {
   }
 
   bool get hasMoreProjects => filteredProjects.length > 3;
+
+  void navigateToDetail(Project project) async {
+    await Get.toNamed('/project-details', arguments: {'project': project});
+    fetchProjects(); // Refresh list on return
+  }
+
+  void fetchProjects() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final result = await _projectRepository.getProjects();
+      allProjects.assignAll(result);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      Get.snackbar('Error', 'Failed to fetch projects: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
