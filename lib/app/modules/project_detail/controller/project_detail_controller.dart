@@ -67,6 +67,43 @@ class ProjectDetailController extends GetxController {
     return "${date.day}/${date.month}/${date.year}";
   }
 
+  // Financial Helpers
+  String formatCurrency(num? amount) {
+    if (amount == null) return 'Rp 0';
+    final str = amount.toStringAsFixed(0);
+    final parts = <String>[];
+    for (var i = str.length; i > 0; i -= 3) {
+      final start = i - 3 < 0 ? 0 : i - 3;
+      parts.insert(0, str.substring(start, i));
+    }
+    return 'Rp ${parts.join('.')}';
+  }
+
+  String formatMetric(num? value) {
+    if (value == null) return '0.00';
+    return value.toStringAsFixed(2);
+  }
+
+  (Color bgColor, Color textColor) getMetricColors(num? value, bool isRatio) {
+    if (value == null || value == 0) {
+      return (AppColors.neutral100, AppColors.neutral700);
+    }
+
+    if (isRatio) {
+      // For CPI and SPI: >= 1.0 is good, 0.8-1.0 is warning, < 0.8 is bad
+      if (value >= 1.0) {
+        return (AppColors.primary100, AppColors.primary500);
+      } else if (value >= 0.8) {
+        return (AppColors.warning100, AppColors.warning500);
+      } else {
+        return (AppColors.error100, AppColors.error500);
+      }
+    } else {
+      // For other metrics, neutral color
+      return (AppColors.neutral100, AppColors.neutral700);
+    }
+  }
+
   void acceptExpense(String expenseId) async {
     // TODO: Implement expense approval via API
     // For now, just show a message
