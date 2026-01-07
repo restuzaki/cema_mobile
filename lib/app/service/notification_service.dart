@@ -69,9 +69,13 @@ class NotificationService {
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) {
         if (message.notification != null) {
+          // Extract data for navigation
+          final Map<String, dynamic> payload = message.data;
+
           LocalNotificationService.show(
             title: message.notification!.title ?? "No Title",
             body: message.notification!.body ?? "No Body",
+            payload: payload.isNotEmpty ? payload : null,
           );
         }
       },
