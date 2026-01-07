@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../data/controllers/data_controller.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/repositories/project_repository.dart';
 import '../../../service/auth_service.dart';
@@ -76,8 +75,7 @@ class ProjectController extends GetxController {
       projects.assignAll(result);
     } catch (e) {
       errorMessage.value = e.toString();
-      // Optional: Show snackbar
-      // Get.snackbar('Error', 'Failed to fetch projects: $e');
+      Get.snackbar('Error', 'Failed to fetch projects: $e');
     } finally {
       isLoading.value = false;
     }
@@ -173,14 +171,11 @@ class ProjectController extends GetxController {
     }
   }
 
-  final DataController _dataController = Get.find<DataController>();
-
   void changeTab(int index) {
     currentTab.value = index;
   }
 
   void navigateToDetail(Project project) async {
-    _dataController.selectProject(project);
     await Get.toNamed('/project-details', arguments: {'project': project});
     fetchProjects(); // Refresh list on return
   }

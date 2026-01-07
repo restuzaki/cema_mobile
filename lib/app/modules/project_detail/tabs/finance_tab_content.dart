@@ -27,58 +27,94 @@ class FinanceTabContent extends StatelessWidget {
             children: [
               Text('Kesehatan Proyek', style: AppTypography.headingMD),
               SizedBox(height: AppSpacing.md),
-              Row(
-                children: [
-                  Expanded(
-                    child: _HealthCard(
-                      label: 'SPI',
-                      value: '1.1',
-                      color: AppColors.success100,
-                      textColor: AppColors.success700,
+              Obx(() {
+                final financials = controller.currentProject.value?.financials;
+                final spiColors = controller.getMetricColors(
+                  financials?.spi,
+                  true,
+                );
+                final cpiColors = controller.getMetricColors(
+                  financials?.cpi,
+                  true,
+                );
+                final pvColors = controller.getMetricColors(
+                  financials?.valuePlanned,
+                  false,
+                );
+
+                return Column(
+                  children: [
+                    // Top row: SPI (small) + EV (large)
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _HealthCard(
+                            label: 'SPI',
+                            value: controller.formatMetric(financials?.spi),
+                            color: spiColors.$1,
+                            textColor: spiColors.$2,
+                          ),
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          flex: 3,
+                          child: _HealthCard(
+                            label: 'EV',
+                            value: controller.formatCurrency(
+                              financials?.valueEarned,
+                            ),
+                            color: spiColors.$1, // EV follows SPI color
+                            textColor: spiColors.$2,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    flex: 3,
-                    child: _HealthCard(
-                      label: 'EV',
-                      value: 'Rp 100.000.000',
-                      color: AppColors.success100,
-                      textColor: AppColors.success700,
+                    SizedBox(height: AppSpacing.sm),
+                    // Middle row: AV (large) + CPI (small)
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: _HealthCard(
+                            label: 'AV',
+                            value: controller.formatCurrency(
+                              financials?.costActual,
+                            ),
+                            color: cpiColors.$1, // AV follows CPI color
+                            textColor: cpiColors.$2,
+                          ),
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: _HealthCard(
+                            label: 'CPI',
+                            value: controller.formatMetric(financials?.cpi),
+                            color: cpiColors.$1,
+                            textColor: cpiColors.$2,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: AppSpacing.sm),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: _HealthCard(
-                      label: 'AV',
-                      value: 'Rp 120.000.000',
-                      color: AppColors.warning100,
-                      textColor: AppColors.warning700,
+                    SizedBox(height: AppSpacing.sm),
+                    // Bottom row: PV (full width)
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Expanded(
+                          child: _HealthCard(
+                            label: 'PV',
+                            value: controller.formatCurrency(
+                              financials?.valuePlanned,
+                            ),
+                            color: pvColors.$1,
+                            textColor: pvColors.$2,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  SizedBox(width: AppSpacing.sm),
-                  Expanded(
-                    child: _HealthCard(
-                      label: 'CPI',
-                      value: '0.81',
-                      color: AppColors.warning100,
-                      textColor: AppColors.warning700,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: AppSpacing.sm),
-              _HealthCard(
-                label: 'PV',
-                value: 'Rp 120.000.000',
-                color: AppColors.neutral100,
-                textColor: AppColors.neutral700,
-              ),
+                  ],
+                );
+              }),
               SizedBox(height: AppSpacing.md),
               CustomButton(
                 text: 'Ekspor Laporan Keuangan',
@@ -158,27 +194,27 @@ class FinanceTabContent extends StatelessWidget {
                 }
                 return Column(
                   children: expenses.map((expense) {
-                    final isPending = expense.status == 'pending';
+                    final isPending = (expense.status ?? '') == 'PENDING';
                     return Padding(
                       padding: EdgeInsets.only(bottom: AppSpacing.sm),
                       child: ExpenseCard(
-                        amount: _formatCurrency(expense.amount),
-                        description: expense.description,
-                        status: expense.status,
+                        amount: controller.formatCurrency(expense.amount),
+                        description: expense.title,
+                        status: expense.status ?? 'PENDING',
                         statusLabel: StatusLabel(
                           label: isPending
                               ? 'Menunggu Persetujuan'
-                              : expense.status == 'approved'
+                              : (expense.status ?? '') == 'APPROVED'
                               ? 'Disetujui'
                               : 'Ditolak',
                           type: isPending
                               ? StatusLabelType.warning
-                              : expense.status == 'approved'
+                              : (expense.status ?? '') == 'APPROVED'
                               ? StatusLabelType.success
                               : StatusLabelType.error,
                           icon: isPending
                               ? Icons.warning_amber
-                              : expense.status == 'approved'
+                              : (expense.status ?? '') == 'APPROVED'
                               ? Icons.check_circle
                               : Icons.cancel,
                         ),
@@ -208,16 +244,18 @@ class FinanceTabContent extends StatelessWidget {
                                   text: 'Accept',
                                   size: ButtonSize.small,
                                   variant: ButtonVariant.primary,
-                                  onPressed: () =>
-                                      controller.acceptExpense(expense.id),
+                                  onPressed: () => controller.acceptExpense(
+                                    expense.id ?? '',
+                                  ),
                                 ),
                                 SizedBox(width: AppSpacing.xs),
                                 CustomButton(
                                   text: 'Reject',
                                   size: ButtonSize.small,
                                   variant: ButtonVariant.danger,
-                                  onPressed: () =>
-                                      controller.rejectExpense(expense.id),
+                                  onPressed: () => controller.rejectExpense(
+                                    expense.id ?? '',
+                                  ),
                                 ),
                               ]
                             : [
@@ -252,16 +290,6 @@ class FinanceTabContent extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatCurrency(double amount) {
-    final str = amount.toStringAsFixed(0);
-    final parts = <String>[];
-    for (var i = str.length; i > 0; i -= 3) {
-      final start = i - 3 < 0 ? 0 : i - 3;
-      parts.insert(0, str.substring(start, i));
-    }
-    return 'Rp ${parts.join('.')}';
   }
 }
 

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import '../../../data/repositories/project_repository.dart';
+import '../../../data/repositories/task_repository.dart';
+import '../../../data/repositories/expense_repository.dart';
 import '../../../service/authenticated_client.dart';
 import 'package:get/get.dart';
 import 'package:cema_mobile/app/design_system/design_system.dart';
-import '../../../data/controllers/data_controller.dart';
 import '../../../data/models/project_model.dart';
-import '../../../data/model/task_model.dart';
-import '../../../data/model/expense_model.dart';
+import '../../../data/models/task_model.dart';
+import '../../../data/models/expense_model.dart';
 
 class ProjectDetailController extends GetxController {
-  final DataController dataController = Get.find<DataController>();
-
   var mainTabIndex = 0.obs;
   var taskFilterIndex = 0.obs;
   var financeFilterIndex = 0.obs;
 
   var isLoading = true.obs;
 
-  Project? get currentProject => dataController.selectedProject.value;
+  // Project received from route arguments
+  final Rx<Project?> currentProject = Rx<Project?>(null);
 
   // Tabs for Filter
   final List<String> taskFilters = [
@@ -28,24 +28,33 @@ class ProjectDetailController extends GetxController {
   ];
   final List<String> financeFilters = ['Semua', 'Pemasukan', 'Pengeluaran'];
 
-  List<TaskModel> get tasks =>
-      dataController.getTasksByProject(currentProject?.id ?? '');
+  // Task and Expense data loaded from repositories
+  final RxList<Task> tasks = <Task>[].obs;
+  final RxList<Expense> expenses = <Expense>[].obs;
 
-  List<ExpenseModel> get expenses =>
-      dataController.getExpensesByProject(currentProject?.id ?? '');
-
-  List<TaskModel> get filteredTasks {
+  List<Task> get filteredTasks {
     final idx = taskFilterIndex.value;
     if (idx == 0) return tasks;
-    if (idx == 1) return tasks.where((t) => t.status == 'ongoing').toList();
-    if (idx == 2) return tasks.where((t) => t.status == 'late').toList();
-    return tasks.where((t) => t.status == 'done').toList();
+    if (idx == 1) return tasks.where((t) => t.status == 'IN_PROGRESS').toList();
+    if (idx == 2) {
+      // Late tasks = overdue tasks
+      final now = DateTime.now();
+      return tasks
+          .where(
+            (t) =>
+                t.dueDate != null &&
+                t.dueDate!.isBefore(now) &&
+                t.status != 'DONE',
+          )
+          .toList();
+    }
+    return tasks.where((t) => t.status == 'DONE').toList();
   }
 
-  List<ExpenseModel> get filteredExpenses {
+  List<Expense> get filteredExpenses {
     final idx = financeFilterIndex.value;
     if (idx == 0) {
-      return expenses.where((e) => e.status == 'pending').toList();
+      return expenses.where((e) => e.status == 'PENDING').toList();
     }
     return expenses;
   }
@@ -58,12 +67,61 @@ class ProjectDetailController extends GetxController {
     return "${date.day}/${date.month}/${date.year}";
   }
 
-  void acceptExpense(String expenseId) {
-    dataController.acceptExpense(expenseId);
+  // Financial Helpers
+  String formatCurrency(num? amount) {
+    if (amount == null) return 'Rp 0';
+    final str = amount.toStringAsFixed(0);
+    final parts = <String>[];
+    for (var i = str.length; i > 0; i -= 3) {
+      final start = i - 3 < 0 ? 0 : i - 3;
+      parts.insert(0, str.substring(start, i));
+    }
+    return 'Rp ${parts.join('.')}';
   }
 
-  void rejectExpense(String expenseId) {
-    dataController.rejectExpense(expenseId);
+  String formatMetric(num? value) {
+    if (value == null) return '0.00';
+    return value.toStringAsFixed(2);
+  }
+
+  (Color bgColor, Color textColor) getMetricColors(num? value, bool isRatio) {
+    if (value == null || value == 0) {
+      return (AppColors.neutral100, AppColors.neutral700);
+    }
+
+    if (isRatio) {
+      // For CPI and SPI: >= 1.0 is good, 0.8-1.0 is warning, < 0.8 is bad
+      if (value >= 1.0) {
+        return (AppColors.primary100, AppColors.primary500);
+      } else if (value >= 0.8) {
+        return (AppColors.warning100, AppColors.warning500);
+      } else {
+        return (AppColors.error100, AppColors.error500);
+      }
+    } else {
+      // For other metrics, neutral color
+      return (AppColors.neutral100, AppColors.neutral700);
+    }
+  }
+
+  void acceptExpense(String expenseId) async {
+    // TODO: Implement expense approval via API
+    // For now, just show a message
+    Get.snackbar(
+      'Info',
+      'Expense approval feature coming soon',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void rejectExpense(String expenseId) async {
+    // TODO: Implement expense rejection via API
+    // For now, just show a message
+    Get.snackbar(
+      'Info',
+      'Expense rejection feature coming soon',
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
 
   // Settings Form Controllers
@@ -78,31 +136,41 @@ class ProjectDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Get project from route arguments
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (args != null && args['project'] != null) {
+      currentProject.value = args['project'] as Project;
+    }
+
     // Initialize form with current data if available
-    ever(dataController.selectedProject, (_) => _initSettingsForm());
+    ever(currentProject, (_) => _initSettingsForm());
     _initSettingsForm();
     fetchProjectDetails();
   }
 
   void fetchProjectDetails() async {
     isLoading.value = true;
-    final id = currentProject?.id;
+    final id = currentProject.value?.id;
     if (id == null) {
       isLoading.value = false;
       return;
     }
     try {
-      final projects = await _repository.getProjects();
+      // Fetch project details
+      final projects = await _projectRepository.getProjects();
       final freshProject = projects.firstWhere(
         (p) => p.id == id,
         orElse: () => throw Exception('Project not found'),
       );
 
-      dataController.selectProject(freshProject); // Updates the reactive value
-      dataController.updateProject(
-        id,
-        freshProject,
-      ); // Updates the list in DataController
+      // Update local project state
+      currentProject.value = freshProject;
+
+      // Fetch tasks for this project
+      await fetchTasks();
+
+      // Fetch expenses for this project
+      await fetchExpenses();
     } catch (e) {
       print("Error fetching project details: $e");
     } finally {
@@ -110,8 +178,36 @@ class ProjectDetailController extends GetxController {
     }
   }
 
+  Future<void> fetchTasks() async {
+    final projectId = currentProject.value?.id;
+    if (projectId == null) return;
+
+    try {
+      final fetchedTasks = await _taskRepository.getTasks(projectId);
+      tasks.value = fetchedTasks;
+    } catch (e) {
+      print('Error fetching tasks: $e');
+      // On error, keep existing cached data if any
+    }
+  }
+
+  Future<void> fetchExpenses() async {
+    final projectId = currentProject.value?.id;
+    if (projectId == null) return;
+
+    try {
+      final fetchedExpenses = await _expenseRepository.getExpenses(
+        projectId: projectId,
+      );
+      expenses.value = fetchedExpenses;
+    } catch (e) {
+      print('Error fetching expenses: $e');
+      // On error, keep existing cached data if any
+    }
+  }
+
   void _initSettingsForm() {
-    final project = currentProject;
+    final project = currentProject.value;
     if (project != null) {
       nameEdit.text = project.name ?? '';
       clientEdit.text = project.clientName ?? '';
@@ -136,13 +232,19 @@ class ProjectDetailController extends GetxController {
         "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
-  // Repository
-  final ProjectRepository _repository = ProjectRepository(
+  // Repositories
+  final ProjectRepository _projectRepository = ProjectRepository(
+    client: AuthenticatedClient(),
+  );
+  final TaskRepository _taskRepository = TaskRepository(
+    client: AuthenticatedClient(),
+  );
+  final ExpenseRepository _expenseRepository = ExpenseRepository(
     client: AuthenticatedClient(),
   );
 
   void saveSettings() async {
-    final project = currentProject;
+    final project = currentProject.value;
     if (project == null || project.id == null) return;
 
     // 1. Prepare Data
@@ -177,7 +279,7 @@ class ProjectDetailController extends GetxController {
 
     try {
       // 2. Call API
-      await _repository.updateProject(project.id!, payload);
+      await _projectRepository.updateProject(project.id!, payload);
 
       // 3. Update Local State (Immediate Feedback)
       final updatedProject = Project.fromJson({
@@ -185,8 +287,7 @@ class ProjectDetailController extends GetxController {
         ...payload,
       });
 
-      dataController.updateProject(project.id!, updatedProject);
-      dataController.selectProject(updatedProject);
+      currentProject.value = updatedProject;
 
       // 4. Fetch Fresh Data (Ensure Consistency)
       fetchProjectDetails();
