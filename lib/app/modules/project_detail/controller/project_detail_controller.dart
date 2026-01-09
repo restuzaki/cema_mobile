@@ -8,6 +8,7 @@ import 'package:cema_mobile/app/design_system/design_system.dart';
 import '../../../data/models/project_model.dart';
 import '../../../data/models/task_model.dart';
 import '../../../data/models/expense_model.dart';
+import '../../../service/local_notification_service.dart';
 
 class ProjectDetailController extends GetxController {
   var mainTabIndex = 0.obs;
@@ -277,6 +278,29 @@ class ProjectDetailController extends GetxController {
       if (end != null) 'endDate': end.toIso8601String(),
     };
 
+    // Track what changed
+    List<String> changedFields = [];
+    if (nameEdit.text != project.name) {
+      changedFields.add('name');
+    }
+    if (clientEdit.text != (project.clientName ?? '')) {
+      changedFields.add('client');
+    }
+    if (descEdit.text != (project.description ?? '')) {
+      changedFields.add('description');
+    }
+    if (start != null && start != project.startDate) {
+      changedFields.add('start date');
+    }
+    if (end != null && end != project.endDate) {
+      changedFields.add('end date');
+    }
+    final oldBudget = project.financials?.budgetTotal ?? 0;
+    final newBudget = num.tryParse(budgetEdit.text) ?? 0;
+    if (newBudget != oldBudget) {
+      changedFields.add('budget');
+    }
+
     try {
       // 2. Call API
       await _projectRepository.updateProject(project.id!, payload);
@@ -292,12 +316,29 @@ class ProjectDetailController extends GetxController {
       // 4. Fetch Fresh Data (Ensure Consistency)
       fetchProjectDetails();
 
+      // Show success snackbar
       Get.snackbar(
         'Sukses',
         'Perubahan projek berhasil disimpan',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: AppColors.success100,
         colorText: AppColors.success700,
+      );
+
+      // Show notification with changed fields
+      final changesText = changedFields.isEmpty
+          ? 'No changes detected'
+          : changedFields.join(', ');
+
+      LocalNotificationService.show(
+        title: '📝 Project Updated',
+        body: '${project.name} has been updated. Changes: $changesText',
+        payload: {
+          'type': 'project_update',
+          'project_id': project.id ?? '',
+          'project_name': project.name ?? '',
+          'changed_fields': changesText,
+        },
       );
     } catch (e) {
       Get.snackbar(
