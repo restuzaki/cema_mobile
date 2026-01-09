@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../../service/auth_service.dart';
 import '../../../service/storage_service.dart';
 
@@ -51,6 +52,13 @@ class LoginController extends GetxController {
         debugPrint("User ID saved successfully ${data['data']['user']['_id']}");
 
         _showSnackbar("Success", "Welcome back!");
+
+        // Update FCM token if it differs
+        await _updateFcmTokenIfNeeded(
+          data['data']['user']['_id'],
+          data['data']['token'],
+        );
+
         await Future.delayed(const Duration(milliseconds: 1000));
         FocusManager.instance.primaryFocus?.unfocus();
         Get.offAllNamed("/home");
@@ -98,6 +106,10 @@ class LoginController extends GetxController {
           box.write('userId', data['id']);
 
           _showSnackbar("Success", "Login Google Berhasil!");
+
+          // Update FCM token if it differs
+          await _updateFcmTokenIfNeeded(data['id'], data['token']);
+
           await Future.delayed(const Duration(milliseconds: 1000));
           Get.offAllNamed("/home");
         } else {
@@ -146,6 +158,53 @@ class LoginController extends GetxController {
   void toggleRememberMe(bool? value) => rememberMe.value = value ?? false;
   void signUp() => Get.toNamed("/register");
   void forgotPassword() => Get.toNamed('/forget-password');
+
+  /// Updates FCM token on the backend if it differs from the current one
+  Future<void> _updateFcmTokenIfNeeded(String userId, String token) async {
+    try {
+      // Get current FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+      if (fcmToken == null) {
+        debugPrint("FCM token is null, skipping update");
+        return;
+      }
+
+      debugPrint("Current FCM Token: $fcmToken");
+
+      // Get user profile to check current stored FCM token
+      final profileResponse = await _authService.getUserProfile(userId, token);
+
+      if (profileResponse.statusCode == 200) {
+        final profileData = jsonDecode(profileResponse.body);
+        final storedFcmToken = profileData['data']?['fcm_token'];
+
+        debugPrint("Stored FCM Token: $storedFcmToken");
+
+        // Only update if tokens differ
+        if (storedFcmToken != fcmToken) {
+          debugPrint("FCM tokens differ, updating...");
+
+          final updateResponse = await _authService.updateUser(userId, token, {
+            'fcm_token': fcmToken,
+          });
+
+          if (updateResponse.statusCode == 200) {
+            debugPrint("FCM token updated successfully ${updateResponse.body}");
+          } else {
+            debugPrint("Failed to update FCM token: ${updateResponse.body}");
+          }
+        } else {
+          debugPrint("FCM token unchanged, no update needed");
+        }
+      } else {
+        debugPrint("Failed to get user profile: ${profileResponse.body}");
+      }
+    } catch (e) {
+      debugPrint("Error updating FCM token: $e");
+      // Don't throw error, just log it - we don't want to block login
+    }
+  }
 
   @override
   void onClose() {
