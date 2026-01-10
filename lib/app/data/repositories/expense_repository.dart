@@ -17,7 +17,7 @@ class ExpenseRepository {
 
   ExpenseRepository({required this.client});
 
-  String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://localhost:5000/api';
+  String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://10.0.2.2:5000/api';
 
   /// Check if device has internet connection
   Future<bool> _isOnline() async {
@@ -74,6 +74,36 @@ class ExpenseRepository {
         }
       }
       rethrow;
+    }
+  }
+
+  /// Get all pending expenses (status = PENDING)
+  /// Uses GET /expenses and filters client-side since backend already filters by role
+  Future<List<Expense>> getPendingExpenses() async {
+    try {
+      if (await _isOnline()) {
+        final uri = Uri.parse('$_baseUrl/expenses');
+        final response = await client.get(uri);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> body = json.decode(response.body);
+
+          if (body['data'] is List) {
+            final List<dynamic> data = body['data'];
+            // Filter for PENDING status client-side
+            return data
+                .map((e) => Expense.fromJson(e))
+                .where((expense) => expense.status == 'PENDING')
+                .toList();
+          } else {
+            return [];
+          }
+        }
+      }
+      throw Exception('Network failed or invalid response');
+    } catch (e) {
+      print('Error fetching pending expenses: $e');
+      return []; // Return empty list on error
     }
   }
 
@@ -148,6 +178,29 @@ class ExpenseRepository {
 
     queue.add(action);
     _storage.write(_queueKey, queue);
+  }
+
+  Future<void> updateExpense(
+    String expenseId,
+    Map<String, dynamic> updateData,
+  ) async {
+    if (await _isOnline()) {
+      final url = Uri.parse('$_baseUrl/expenses/$expenseId');
+
+      try {
+        final response = await client.put(url, body: json.encode(updateData));
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          return;
+        } else {
+          throw Exception('API Error: ${response.statusCode} ${response.body}');
+        }
+      } catch (e) {
+        rethrow;
+      }
+    } else {
+      throw Exception('Cannot update expense while offline');
+    }
   }
 
   // ---------------------------------------------------------------------------

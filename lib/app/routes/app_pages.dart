@@ -67,7 +67,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.NOTIFICATION,
-      page: () => NotificationScreen(isPM: true),
+      page: () => const NotificationScreen(),
       binding: NotificationBinding(),
     ),
     GetPage(

@@ -17,7 +17,7 @@ class ProjectRepository {
 
   ProjectRepository({required this.client});
 
-  String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://localhost:5000/api';
+  String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://10.0.2.2:5000/api';
 
   /// Check if device has internet connection
   Future<bool> _isOnline() async {

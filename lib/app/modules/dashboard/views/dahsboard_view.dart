@@ -32,9 +32,55 @@ class DashboardView extends GetView<DashboardController> {
               children: [
                 _buildSectionHeader("Pesan Saya"),
                 const SizedBox(height: 16),
-                _buildTaskCard(greenColor, redColor, lightGreenColor),
-                const SizedBox(height: 16),
-                _buildProjectCard(greenColor, redColor, lightGreyColor),
+
+                // Show real tasks and expenses from controller
+                Obx(() {
+                  final hasTasks = controller.upcomingTasks.isNotEmpty;
+                  final hasExpenses = controller.pendingExpenses.isNotEmpty;
+
+                  if (!hasTasks && !hasExpenses) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32.0),
+                        child: Text(
+                          'Tidak ada tugas atau pengeluaran pending',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      // Display top 3 tasks
+                      ...controller.upcomingTasks.map((task) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildRealTaskCard(
+                            task,
+                            greenColor,
+                            redColor,
+                            lightGreenColor,
+                          ),
+                        );
+                      }).toList(),
+
+                      // Display top 3 expenses
+                      ...controller.pendingExpenses.map((expense) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildRealExpenseCard(
+                            expense,
+                            greenColor,
+                            redColor,
+                            lightGreyColor,
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  );
+                }),
+
                 const SizedBox(height: 24),
                 _buildRiskyProjectSectionHeader(),
                 const SizedBox(height: 16),
@@ -632,4 +678,203 @@ class DashboardView extends GetView<DashboardController> {
     );
   }
   */
+
+  Widget _buildRealTaskCard(
+    task,
+    Color greenColor,
+    Color redColor,
+    Color lightGreenColor,
+  ) {
+    final daysUntilDue = task.dueDate?.difference(DateTime.now()).inDays ?? 0;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        task.title ?? "Task",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        "Project: ${task.projectId?['name'] ?? 'Unknown'}",
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Jatuh tempo dalam $daysUntilDue hari",
+                        style: TextStyle(
+                          color: daysUntilDue < 3 ? redColor : greenColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () => controller.acceptTask(task.id ?? ''),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: greenColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                child: const Text("Tandai Selesai"),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRealExpenseCard(
+    expense,
+    Color greenColor,
+    Color redColor,
+    Color lightGreyColor,
+  ) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      expense.title ?? "Pengeluaran",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const Text(
+                      "Menunggu approval",
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: lightGreyColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: Colors.orange, size: 16),
+                      SizedBox(width: 4),
+                      Text("Pending", style: TextStyle(color: Colors.orange)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              decoration: BoxDecoration(
+                color: lightGreyColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.monetization_on_rounded,
+                    color: Colors.grey.shade600,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    "Rp ${(expense.amount ?? 0).toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.snackbar(
+                        "Sukses",
+                        "Pengeluaran ${expense.id} disetujui",
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: greenColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text("Accept"),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      Get.snackbar("Info", "Pengeluaran ${expense.id} ditolak");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: redColor,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    child: const Text("Reject"),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

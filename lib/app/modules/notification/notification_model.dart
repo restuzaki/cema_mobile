@@ -5,6 +5,8 @@ class NotificationItem {
   final bool hasAction;
   final String timestamp;
   final List<String>? avatars;
+  final String? taskId;
+  final String? expenseId;
 
   NotificationItem({
     required this.title,
@@ -13,5 +15,7 @@ class NotificationItem {
     this.hasAction = false,
     required this.timestamp,
     this.avatars,
+    this.taskId,
+    this.expenseId,
   });
 }

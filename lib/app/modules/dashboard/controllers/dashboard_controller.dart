@@ -1,5 +1,9 @@
 import 'dart:convert';
 import 'package:cema_mobile/app/data/repositories/project_repository.dart';
+import 'package:cema_mobile/app/data/repositories/task_repository.dart';
+import 'package:cema_mobile/app/data/repositories/expense_repository.dart';
+import 'package:cema_mobile/app/data/models/task_model.dart';
+import 'package:cema_mobile/app/data/models/expense_model.dart';
 import 'package:cema_mobile/app/service/authenticated_client.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,10 +16,18 @@ class DashboardController extends GetxController {
   final ProjectRepository _projectRepository = ProjectRepository(
     client: AuthenticatedClient(),
   );
+  final TaskRepository _taskRepository = TaskRepository(
+    client: AuthenticatedClient(),
+  );
+  final ExpenseRepository _expenseRepository = ExpenseRepository(
+    client: AuthenticatedClient(),
+  );
   final box = GetStorage();
   final StorageService _storageService = StorageService();
 
   final RxList<Project> allProjects = <Project>[].obs;
+  final RxList<Task> upcomingTasks = <Task>[].obs;
+  final RxList<Expense> pendingExpenses = <Expense>[].obs;
 
   var userName = "".obs;
   var userRole = "".obs;
@@ -28,7 +40,8 @@ class DashboardController extends GetxController {
     super.onInit();
     getUserData();
     fetchProjects();
-    // fetchUserProfile();
+    fetchUpcomingTasks();
+    fetchPendingExpenses();
   }
 
   void getUserData() {
@@ -128,6 +141,28 @@ class DashboardController extends GetxController {
       Get.snackbar('Error', 'Failed to fetch projects: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void fetchUpcomingTasks() async {
+    try {
+      final tasks = await _taskRepository.getUpcomingTasks();
+      // Only show top 3 tasks
+      upcomingTasks.value = tasks.take(3).toList();
+    } catch (e) {
+      print('Error fetching upcoming tasks: $e');
+      upcomingTasks.value = [];
+    }
+  }
+
+  void fetchPendingExpenses() async {
+    try {
+      final expenses = await _expenseRepository.getPendingExpenses();
+      // Only show top 3 expenses
+      pendingExpenses.value = expenses.take(3).toList();
+    } catch (e) {
+      print('Error fetching pending expenses: $e');
+      pendingExpenses.value = [];
     }
   }
 }
