@@ -70,6 +70,7 @@ void _handleNotificationNavigation(Map<String, dynamic> data) {
   try {
     final String? type = data['type'];
     final String? id = data['id'];
+    final String? projectId = data['project_id'];
 
     print('🔔 Navigating to: type=$type, id=$id');
 
@@ -79,6 +80,18 @@ void _handleNotificationNavigation(Map<String, dynamic> data) {
     } else if (type == 'task' && id != null) {
       // Navigate to task detail page
       Get.toNamed('/task-detail', arguments: {'taskId': id});
+    } else if ((type == 'expense_submission' ||
+            type == 'expense_approved' ||
+            type == 'expense_rejected') &&
+        projectId != null) {
+      // Navigate to project detail finance tab for expense notifications
+      Get.toNamed(
+        '/project-detail',
+        arguments: {
+          'projectId': projectId,
+          'initialTab': 1, // Finance tab index
+        },
+      );
     } else {
       // Default: just go to notifications page
       Get.toNamed('/notification');

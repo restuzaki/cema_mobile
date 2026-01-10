@@ -106,23 +106,94 @@ class ProjectDetailController extends GetxController {
   }
 
   void acceptExpense(String expenseId) async {
-    // TODO: Implement expense approval via API
-    // For now, just show a message
-    Get.snackbar(
-      'Info',
-      'Expense approval feature coming soon',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    try {
+      // Update expense status to APPROVED
+      await _expenseRepository.updateExpense(expenseId, {'status': 'APPROVED'});
+
+      // Refresh expense list
+      await fetchExpenses();
+
+      Get.snackbar(
+        'Sukses',
+        'Pengeluar an telah disetujui',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.success100,
+        colorText: AppColors.success700,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menyetujui pengeluaran: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error100,
+        colorText: AppColors.error700,
+      );
+    }
   }
 
   void rejectExpense(String expenseId) async {
-    // TODO: Implement expense rejection via API
-    // For now, just show a message
-    Get.snackbar(
-      'Info',
-      'Expense rejection feature coming soon',
-      snackPosition: SnackPosition.BOTTOM,
+    // Show dialog to get rejection note
+    final TextEditingController noteController = TextEditingController();
+
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: Text('Tolak Pengeluaran'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Berikan alasan penolakan:'),
+            SizedBox(height: 12),
+            TextField(
+              controller: noteController,
+              decoration: InputDecoration(
+                hintText: 'Contoh: Bukti tidak lengkap',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: Text('Tolak', style: TextStyle(color: AppColors.error500)),
+          ),
+        ],
+      ),
     );
+
+    if (confirmed == true && noteController.text.isNotEmpty) {
+      try {
+        // Update expense status to REJECTED with note
+        await _expenseRepository.updateExpense(expenseId, {
+          'status': 'REJECTED',
+          'rejection_note': noteController.text,
+        });
+
+        // Refresh expense list
+        await fetchExpenses();
+
+        Get.snackbar(
+          'Sukses',
+          'Pengeluaran telah ditolak',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error100,
+          colorText: AppColors.error700,
+        );
+      } catch (e) {
+        Get.snackbar(
+          'Error',
+          'Gagal menolak pengeluaran: $e',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppColors.error100,
+          colorText: AppColors.error700,
+        );
+      }
+    }
   }
 
   // Settings Form Controllers

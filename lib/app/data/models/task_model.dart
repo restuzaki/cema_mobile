@@ -1,7 +1,7 @@
 class Task {
   String? sId;
   String? id;
-  String? projectId;
+  Map<String, dynamic>? projectId;
   List<String>? assignedTo;
   String? createdBy;
   String? title;

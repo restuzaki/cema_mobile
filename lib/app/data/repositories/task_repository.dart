@@ -16,7 +16,7 @@ class TaskRepository {
 
   TaskRepository({required this.client});
 
-  String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://localhost:5000/api';
+  String get _baseUrl => dotenv.env['API_KEY'] ?? 'http://10.0.2.2:5000/api';
 
   /// Check if device has internet connection
   Future<bool> _isOnline() async {
@@ -62,6 +62,32 @@ class TaskRepository {
         }
       }
       rethrow;
+    }
+  }
+
+  /// Get all upcoming tasks (for notifications)
+  /// Uses /tasks/upcoming endpoint which returns tasks due soon
+  Future<List<Task>> getUpcomingTasks() async {
+    try {
+      if (await _isOnline()) {
+        final url = Uri.parse('$_baseUrl/tasks/upcoming');
+        final response = await client.get(url);
+
+        if (response.statusCode == 200) {
+          final Map<String, dynamic> body = json.decode(response.body);
+
+          if (body['data'] is List) {
+            final List<dynamic> data = body['data'];
+            return data.map((e) => Task.fromJson(e)).toList();
+          } else {
+            return [];
+          }
+        }
+      }
+      throw Exception('Network failed or invalid response');
+    } catch (e) {
+      print('Error fetching upcoming tasks: $e');
+      return []; // Return empty list on error
     }
   }
 
